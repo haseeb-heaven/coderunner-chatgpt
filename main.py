@@ -3,36 +3,19 @@ import aiofiles
 import requests
 import quart
 import quart_cors
-from quart import request, render_template_string, send_file
+from quart import request,send_file
 import logging
-# Main Quart app.
-# Quart is a Python ASGI web microframework with the same API as Flask. 
-# It is intended to provide the easiest way to use asyncio in a web context, especially with existing Flask apps.
 
+
+# Quart is a Python ASGI web microframework with the same API as Flask. 
 app = quart_cors.cors(quart.Quart(__name__), allow_origin="https://chat.openai.com")
-LANGUAGE_CODES = {
-    'C': 'c',
-    'C++': 'cpp',
-    'Java': 'java',
-    'Ruby': 'ruby',
-    'Scala': 'scala',
-    'C#': 'csharp',
-    'Objective C': 'objc',
-    'Swift': 'swift',
-    'JavaScript': 'nodejs',
-    'Kotlin': 'kotlin',
-    'Python': 'python3',
-    'GO Lang': 'go',
-}
 
 @app.route('/run_code', methods=['POST'])
 async def run_code():
     data = await request.get_json()  # Get JSON data from request
     script = data.get('script')
     language = data.get('language')
-    # Convert language to JDoodle language code
-    #language=LANGUAGE_CODES[language]
-    
+
     # Declare input and compileOnly optional.
     input = data.get('input', None)
     compileOnly = data.get('compileOnly', False)
@@ -64,49 +47,30 @@ async def run_code():
         return {"error": str(e), "logs": logs}, 400
     return {"result": response.json(), "logs": logs}
 
-
-from quart import Response, stream_with_context
-import base64
-from quart import Response
-
-api_key = '8r9xowq-IugV3EaScZ5dRbWHhNpQd7_9'
-
 @app.route('/save_code', methods=['POST'])
 async def save_code():
     data = await request.get_json() # Get JSON data from request
     filename = data.get('filename')
     code = data.get('code')
     if filename is None or code is None:
-        return {"error": "filename and code are required"}, 400
+        return {"error": "filename or code not provided"}, 400
 
     logger = logging.getLogger(__name__)
-    logger.info(f"CodeRunner: filename is {filename} and code was present")
+    logger.info(f"CodeRunner: SaveCode filename is {filename} and code was present")
+    async with aiofiles.open(filename, 'w') as f:
+        await f.write(code)
+    logger.info("CodeRunner: wrote code to file")
 
-    # Upload the file to Pastebin
-    data = {
-        'api_dev_key': api_key,
-        'api_option': 'paste',
-        'api_paste_code': code,
-        'api_paste_name': filename,
-        'api_paste_format': 'cpp',
-        'api_paste_private': '0',
-        'api_paste_expire_date': 'N'
-    }
-    logger.info(f"CodeRunner: uploading file to Pastebin\n{data}")
-    response = requests.post('https://pastebin.com/api/api_post.php', data=data)
-    logger.info(f"CodeRunner: response from Pastebin is {response}")
+    download_link = f'{request.host_url}download/{filename}'
+    logger.info(f"CodeRunner: download link is {download_link}")
+    output = ""
+    if download_link:
+        output = {"download_link": download_link}
+    return output
 
-    if response.status_code == 200:
-        paste_url = response.text
-        download_url = paste_url.replace('.com/', '.com/raw/')
-        logger.info(f"CodeRunner: download URL is {download_url}")
-
-        # Return the download URL in the response
-        return download_url
-    else:
-        logger.error(f"CodeRunner: error uploading file: {response.text}")
-        return {"error": "error uploading file"}, 400
-
+@app.get('/download/<filename>')
+async def download(filename):
+    return await send_file(filename, as_attachment=True, attachment_filename=filename)
 
 @app.get("/logo.png")
 async def plugin_logo():
@@ -115,12 +79,14 @@ async def plugin_logo():
 
 @app.get("/.well-known/ai-plugin.json")
 async def plugin_manifest():
+    host = request.headers['Host']
     with open("./.well-known/ai-plugin.json") as f:
         text = f.read()
         return quart.Response(text, mimetype="text/json")
 
 @app.get("/openapi.yaml")
 async def openapi_spec():
+    host = request.headers['Host']
     with open("openapi.yaml") as f:
         text = f.read()
         return quart.Response(text, mimetype="text/yaml")

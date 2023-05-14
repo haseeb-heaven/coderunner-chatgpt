@@ -31,6 +31,28 @@ paths:
       responses:
         '200':
           description: Code saved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  download_link:
+                    type: string
+                    example: 'http://localhost:8000/download/hello_world.cpp'
+  /download/{filename}:
+    get:
+      summary: Download file
+      operationId: downloadFile
+      parameters:
+        - name: filename
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 'hello_world.cpp'
+      responses:
+        '200':
+          description: File downloaded
 components:
   schemas:
     Code:
