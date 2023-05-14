@@ -27,23 +27,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Code'
+              $ref: '#/components/schemas/CodeFile'
       responses:
         '200':
           description: Code saved
-  /dynamic_code:
-    post:
-      summary: Generate Dynamic HTML for JDoodle Compiler iFrame Embedding
-      operationId: generateDynamicHtml
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/DynamicCode'
-      responses:
-        '200':
-          description: Dynamic HTML generated
 components:
   schemas:
     Code:
@@ -64,15 +51,15 @@ components:
         compileOnly:
           type: boolean
           example: false
-    DynamicCode:
+    CodeFile:
       type: object
       required:
-        - language
+        - filename
         - code
       properties:
-        language:
+        filename:
           type: string
-          example: "python3"
+          example: "hello_world.cpp"
         code:
           type: string
-          example: "print('Hello World')"
+          example: "print('Hello, World!')"

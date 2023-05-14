@@ -1,15 +1,15 @@
 import json
+import aiofiles
 import requests
 import quart
 import quart_cors
-from quart import request, render_template_string
+from quart import request, render_template_string, send_file
 import logging
 # Main Quart app.
 # Quart is a Python ASGI web microframework with the same API as Flask. 
 # It is intended to provide the easiest way to use asyncio in a web context, especially with existing Flask apps.
 
 app = quart_cors.cors(quart.Quart(__name__), allow_origin="https://chat.openai.com")
-
 LANGUAGE_CODES = {
     'C': 'c',
     'C++': 'cpp',
@@ -65,71 +65,48 @@ async def run_code():
     return {"result": response.json(), "logs": logs}
 
 
-# Define the /save_code endpoint
-@app.post("/save_code")
-def save_code():
-    # Implement your code saving logic here
-    pass
+from quart import Response, stream_with_context
+import base64
+from quart import Response
 
-# Generate Dynamic HTML for JDoodle Compiler iFrame Embedding.
-@app.post("/dynamic_code")
-async def generate_dynamic_html():
-    logger = logging.getLogger(__name__)
-    data = await request.get_json()  # Get JSON data from request
-    language = data.get('language')
+api_key = '8r9xowq-IugV3EaScZ5dRbWHhNpQd7_9'
+
+@app.route('/save_code', methods=['POST'])
+async def save_code():
+    data = await request.get_json() # Get JSON data from request
+    filename = data.get('filename')
     code = data.get('code')
-    logger.info("Generating dynamic HTML for language: %s", language)
-    html_template = """
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Python App with JavaScript</title>
-    </head>
-    <body>
-        <div data-pym-src='https://www.jdoodle.com/plugin' data-language="{language}"
-            data-version-index="0" data-libs="">
-            {script_code}
-        </div>
-        <script src="https://www.jdoodle.com/assets/jdoodle-pym.min.js" type="text/javascript"></script>
-    </body>
-    </html>
-    """.format(language=language, script_code=code)
-    return await render_template_string(html_template)
+    if filename is None or code is None:
+        return {"error": "filename and code are required"}, 400
 
-@app.route('/form', methods=['GET'])
-async def form():
-    form_html = """
-    <form action="https://www.jdoodle.com/api/redirect-to-post/online-java-compiler" method="post">
-      Script: <textarea name="initScript" rows="8" cols="80"></textarea>
-      <input type="submit" value="Submit">
-    </form>
-    """
-    return await render_template_string(form_html)
+    logger = logging.getLogger(__name__)
+    logger.info(f"CodeRunner: filename is {filename} and code was present")
 
-#Method for testing. Remove later
-@app.get("/")
-def root_url():
-    # The URL of the /run_code endpoint
-    url = "http://localhost:8000/run_code"
-
-    # The headers for the POST request to the /run_code endpoint
-    headers = {"Content-Type": "application/json"}
-
-    # The body of the POST request to the /run_code endpoint
+    # Upload the file to Pastebin
     data = {
-        "script": "print('Value is ' + input())",
-        "language": "python3",
-        "input": "Hello, Cppz!",
-        "compileOnly": False,
+        'api_dev_key': api_key,
+        'api_option': 'paste',
+        'api_paste_code': code,
+        'api_paste_name': filename,
+        'api_paste_format': 'cpp',
+        'api_paste_private': '0',
+        'api_paste_expire_date': 'N'
     }
-    
-    print(f"Main Url is {url} and headers is {headers} and data is {data}")
-    # Make the POST request to the /run_code endpoint
-    response = requests.post(url, headers=headers, json=data)
-    print(f"Response is {response}")
-    # Print the response from the /run_code endpoint
-    return response.json()
+    logger.info(f"CodeRunner: uploading file to Pastebin\n{data}")
+    response = requests.post('https://pastebin.com/api/api_post.php', data=data)
+    logger.info(f"CodeRunner: response from Pastebin is {response}")
+
+    if response.status_code == 200:
+        paste_url = response.text
+        download_url = paste_url.replace('.com/', '.com/raw/')
+        logger.info(f"CodeRunner: download URL is {download_url}")
+
+        # Return the download URL in the response
+        return download_url
+    else:
+        logger.error(f"CodeRunner: error uploading file: {response.text}")
+        return {"error": "error uploading file"}, 400
+
 
 @app.get("/logo.png")
 async def plugin_logo():
@@ -138,14 +115,12 @@ async def plugin_logo():
 
 @app.get("/.well-known/ai-plugin.json")
 async def plugin_manifest():
-    host = request.headers['Host']
     with open("./.well-known/ai-plugin.json") as f:
         text = f.read()
         return quart.Response(text, mimetype="text/json")
 
 @app.get("/openapi.yaml")
 async def openapi_spec():
-    host = request.headers['Host']
     with open("openapi.yaml") as f:
         text = f.read()
         return quart.Response(text, mimetype="text/yaml")
