@@ -3,7 +3,7 @@
   "name_for_human": "Code Runner",
   "name_for_model": "code_runner",
   "description_for_human": "Run and save the code in ChatGPT. Supports upto 70+ languages.",
-  "description_for_model": "Code_Runner_Plugin",
+  "description_for_model": "Code Runner to run and save code in ChatGPT. Always use language codes in lowercase letters, such as 'python'. To download and save code, use the 'save_code' endpoint only.",
     "auth": {
       "type": "none"
     },
