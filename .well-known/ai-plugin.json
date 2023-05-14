@@ -1,0 +1,19 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Code Runner",
+  "name_for_model": "code_runner_v1",
+  "description_for_human": "Run and save the code in ChatGPT. Supports upto 70+ languages.",
+  "description_for_model": "Code_Runner_Plugin",
+    "auth": {
+      "type": "none"
+    },
+    "api": {
+      "type": "openapi",
+      "url": "http://localhost:8000/openapi.yaml",
+      "is_user_authenticated": false
+    },
+    "logo_url": "http://localhost:8000/logo.png",
+    "contact_email": "haseebmir.hm@gmail.com",
+    "legal_info_url": "http://example.com/legal"
+  }
+  
