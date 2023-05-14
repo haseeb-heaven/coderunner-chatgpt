@@ -2,15 +2,37 @@ import json
 import requests
 import quart
 import quart_cors
-from quart import request
+from quart import request, render_template_string
+import logging
+# Main Quart app.
+# Quart is a Python ASGI web microframework with the same API as Flask. 
+# It is intended to provide the easiest way to use asyncio in a web context, especially with existing Flask apps.
 
 app = quart_cors.cors(quart.Quart(__name__), allow_origin="https://chat.openai.com")
+
+LANGUAGE_CODES = {
+    'C': 'c',
+    'C++': 'cpp',
+    'Java': 'java',
+    'Ruby': 'ruby',
+    'Scala': 'scala',
+    'C#': 'csharp',
+    'Objective C': 'objc',
+    'Swift': 'swift',
+    'JavaScript': 'nodejs',
+    'Kotlin': 'kotlin',
+    'Python': 'python3',
+    'GO Lang': 'go',
+}
 
 @app.route('/run_code', methods=['POST'])
 async def run_code():
     data = await request.get_json()  # Get JSON data from request
     script = data.get('script')
     language = data.get('language')
+    # Convert language to JDoodle language code
+    #language=LANGUAGE_CODES[language]
+    
     # Declare input and compileOnly optional.
     input = data.get('input', None)
     compileOnly = data.get('compileOnly', False)
@@ -48,6 +70,42 @@ async def run_code():
 def save_code():
     # Implement your code saving logic here
     pass
+
+# Generate Dynamic HTML for JDoodle Compiler iFrame Embedding.
+@app.post("/dynamic_code")
+async def generate_dynamic_html():
+    logger = logging.getLogger(__name__)
+    data = await request.get_json()  # Get JSON data from request
+    language = data.get('language')
+    code = data.get('code')
+    logger.info("Generating dynamic HTML for language: %s", language)
+    html_template = """
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Python App with JavaScript</title>
+    </head>
+    <body>
+        <div data-pym-src='https://www.jdoodle.com/plugin' data-language="{language}"
+            data-version-index="0" data-libs="">
+            {script_code}
+        </div>
+        <script src="https://www.jdoodle.com/assets/jdoodle-pym.min.js" type="text/javascript"></script>
+    </body>
+    </html>
+    """.format(language=language, script_code=code)
+    return await render_template_string(html_template)
+
+@app.route('/form', methods=['GET'])
+async def form():
+    form_html = """
+    <form action="https://www.jdoodle.com/api/redirect-to-post/online-java-compiler" method="post">
+      Script: <textarea name="initScript" rows="8" cols="80"></textarea>
+      <input type="submit" value="Submit">
+    </form>
+    """
+    return await render_template_string(form_html)
 
 #Method for testing. Remove later
 @app.get("/")
