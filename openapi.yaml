@@ -3,7 +3,7 @@ info:
   title: Code Runner
   version: "1.0"
 servers:
-  - url: http://localhost:8000
+  - url: https://coderunner-plugin.haseebmir.repl.co
 paths:
   /run_code:
     post:
@@ -38,7 +38,7 @@ paths:
                 properties:
                   download_link:
                     type: string
-                    example: 'http://localhost:8000/download/hello_world.cpp'
+                    example: 'https://coderunner-plugin.haseebmir.repl.co/download/hello_world.cpp'
   /download/{filename}:
     get:
       summary: Download file
@@ -64,7 +64,17 @@ paths:
             application/json:
               schema:
                 type: object
-
+  /credit_limit:
+    get:
+      summary: Get Credits limit
+      operationId: creditLimit
+      responses:
+        '200':
+          description: Credits limit
+          content:
+            application/json:
+              schema:
+                type: object
 components:
   schemas:
     Code:
