@@ -10,14 +10,19 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from starlette.requests import Request
 from contextvars import ContextVar
+import random
+import string
 
+# Define the allowed origins.
 ORIGINS = [
     "http://localhost:8000",
     "https://chat.openai.com"
 ]
 
-## Main application for FastAPI Web Server
+# Main application for FastAPI Web Server
 app = FastAPI()
+
+# Config for CORS Middleware.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ORIGINS,
@@ -59,7 +64,13 @@ lang_codes = {
     'swift': 'swift'
 }
 
-#Method to configure logs.
+def generate_code_id(response,length=10):
+    characters = string.ascii_letters + string.digits
+    unique_id = ''.join(random.choice(characters) for i in range(length))
+    response['id'] = unique_id
+    return response
+
+# Method to configure logs.
 def configure_logger(name: str, filename: str):
     logger = logging.getLogger(name)
     logger.setLevel(logging.INFO)
@@ -90,6 +101,7 @@ async def set_request_middleware(request: Request, call_next):
     response = await call_next(request)
     return response
 
+# Method to run the code.
 @app.post('/run_code')
 async def run_code():
     request = get_request()
@@ -101,36 +113,40 @@ async def run_code():
     # Convert the language to the JDoodle language code.
     language_code = lang_codes.get(language, language)
     logger.info(f"run_code: language_code is {language_code}")
+    
     # Declare input and compileOnly optional.
     input = data.get('input', None)
-    compileOnly = data.get('compileOnly', False)
+    compile_only = data.get('compileOnly', False)
 
     try:
         # Get the JDoodle client ID and secret.
-        clientId, clientSecret = get_jdoodle_client()
-        compilerApiUrl = "https://api.jdoodle.com/v1/execute"
+        client_id, client_secret = get_jdoodle_client()
+        compiler_api_Url = "https://api.jdoodle.com/v1/execute"
         headers = {
             'Content-Type': 'application/json',
             'X-Requested-With': 'XMLHttpRequest',
         }
 
         body = {
-            'clientId': clientId,
-            'clientSecret': clientSecret,
+            'clientId': client_id,
+            'clientSecret': client_secret,
             'script': script,
             'language': language_code,
             'stdin':input,
-            'compileOnly': compileOnly,
+            'compileOnly': compile_only,
             'versionIndex': '0',
         }
-        body_filtered = {k: v for k, v in body.items() if k not in ['clientId', 'clientSecret','script']}
+        # Filter out the client ID, client secret from the body.
+        body_filtered = {k: v for k, v in body.items() if k not in ['clientId', 'clientSecret']}
 
         logger.info(f"run_code: body is {body_filtered}")
-        response = requests.post(compilerApiUrl, headers=headers, data=json.dumps(body))
-        logger.info(f"run_code: response code is {response} and response is {response.json()}")
+        response_data = requests.post(compiler_api_Url, headers=headers, data=json.dumps(body))
+        response = json.loads(response_data.content.decode('utf-8'))
+        response = generate_code_id(response)
+        logger.info(f"run_code: response is {response}")
     except Exception as e:
         return {"error": str(e)},400
-    return {"result": response.json()}
+    return {"result": response}, 200
 
 # Method to save the code.
 @app.post('/save_code')
@@ -225,11 +241,11 @@ async def help():
     return json_data
 
 # Testing purpose.
-# call this with uvicorn main:app --reload only.
+# call this with `uvicorn main:app` --reload only.
 logger = configure_logger('CodeRunner', 'CodeRunner.log')
 
 # Run the app.
-# Will only work with python main.py
+# Will only work with `python main.py`
 if __name__ == "__main__":
     logger = configure_logger('CodeRunner', 'CodeRunner.log')
     uvicorn.run(app,host="0.0.0.0", port=8000)
