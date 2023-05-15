@@ -53,6 +53,18 @@ paths:
       responses:
         '200':
           description: File downloaded
+  /help:
+    get:
+      summary: Help
+      operationId: help
+      responses:
+        '200':
+          description: Help
+          content:
+            application/json:
+              schema:
+                type: object
+
 components:
   schemas:
     Code:
