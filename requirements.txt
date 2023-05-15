@@ -1,2 +1,7 @@
-quart
-quart-cors
+fastapi
+aiofiles
+requests
+uvicorn
+pydantic
+starlette
+contextvars

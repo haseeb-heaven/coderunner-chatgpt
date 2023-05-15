@@ -1,4 +1,4 @@
-from fastapi import  FastAPI, Request,Depends, Response
+from fastapi import  FastAPI, Request,Depends, Response,HTTPException
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 import aiofiles
@@ -12,6 +12,7 @@ from starlette.requests import Request
 from contextvars import ContextVar
 import random
 import string
+import os
 
 # Define the allowed origins.
 ORIGINS = [
@@ -172,11 +173,23 @@ async def save_code():
         output = {"download_link": download_link}
     return output
 
-# Method to download the file.
 @app.get('/download/{filename}')
 async def download(filename: str):
     logger.info(f"download filename is {filename}")
+    if not os.path.exists(filename):
+        raise HTTPException(status_code=404, detail="File not found")
     return FileResponse(filename, filename=filename)
+
+# Method to get the code from the id.
+@app.get('/get_code/{id}')
+async def get_code(id: str):
+    logger.info(f"get_code id is {id}")
+    filename = f'{id}.txt'
+    logger.info(f"get_code filename is {filename}")
+    async with aiofiles.open(filename, 'r') as f:
+        code = await f.read()
+    logger.info(f"get_code code is {code}")
+    return {"code": code}
 
 # Plugin logo.
 @app.get("/logo.png")
