@@ -3,7 +3,8 @@ info:
   title: Code Runner
   version: "1.0"
 servers:
-  - url: https://coderunner-plugin.haseebmir.repl.co
+  - url:  http://localhost:8000
+    description: Local server
 paths:
   /run_code:
     post:

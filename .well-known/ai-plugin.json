@@ -4,16 +4,15 @@
   "name_for_model": "code_runner",
   "description_for_human": "Run and save the code in ChatGPT. Supports upto 70+ languages.",
   "description_for_model": "Code Runner.Always use language codes in lowercase letters, such as 'python'. If not clear the use help endpoint always to display. And always check the credits and use credit_limit endpoint before running the code, Note Credits should be less than 200.",
-    "auth": {
-      "type": "none"
-    },
-    "api": {
-      "type": "openapi",
-      "url": "https://coderunner-plugin.haseebmir.repl.co/openapi.yaml",
-      "is_user_authenticated": false
-    },
-    "logo_url": "https://coderunner-plugin.haseebmir.repl.co/logo.png",
-    "contact_email": "haseebmir.hm@gmail.com",
-    "legal_info_url": "https://merciful-mole.static.app/"
-  }
-  
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "http://localhost:8000/openapi.yaml",
+    "is_user_authenticated": false
+  },
+  "logo_url": "http://localhost:8000/logo.png",
+  "contact_email": "haseebmir.hm@gmail.com",
+  "legal_info_url": "https://merciful-mole.static.app/"
+}

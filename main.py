@@ -1,3 +1,13 @@
+"""
+Description: This is ChatGPT Plugin for CodeRunner. Which can run and save code in 70+ languages.
+This is a FastAPI Web Server which is used to run the code and return the output.
+Server API : FastAPI.
+Language: Python.
+Date: 16/05/2023.
+Author : HeavenHM
+"""
+
+# Importing the required libraries.
 from fastapi import FastAPI, Request, Depends, Response
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -16,8 +26,9 @@ import random
 import string
 import os
 
+#defining the origin for CORS
 ORIGINS = [
-  "https://coderunner-plugin.haseebmir.repl.co/", "https://chat.openai.com"
+  "localhost:8000", "https://chat.openai.com"
 ]
 
 ## Main application for FastAPI Web Server
@@ -167,12 +178,14 @@ async def run_code():
         logger.info(f"run_code: body is {body_filtered}")
         response_data = requests.post(compiler_api_Url, headers=headers, data=json.dumps(body))
         response = json.loads(response_data.content.decode('utf-8'))
-        response = generate_code_id(response)
+        # Checking reponse status code before appending the code id.
+        if response_data.status_code == 200:
+            response = generate_code_id(response)
         
         logger.info(f"run_code: response is {response}")
     except Exception as e:
-        return {"error": str(e)},400
-    return {"result": response}, 200
+        return {"error": str(e)}
+    return {"result": response}
 
 
 # Method to save the code.
@@ -246,8 +259,7 @@ def show_credits_spent():
       return {"credtis:": credit_spent['used']}
     
   except Exception as e:
-    return {"error": str(e)},400
-    return {"result": credits_spent}, 200
+    return {"error": str(e)}
   
 @app.get('/help')
 @app.get('/')
@@ -297,11 +309,8 @@ async def help():
 # call this with uvicorn main:app --reload only.
 logger = configure_logger('CodeRunner', 'CodeRunner.log')
 
-print("App is ",__name__)
 # Run the app.
 # Will only work with python main.py
 if __name__ == "__main__":
-  print("Main was called")
   logger = configure_logger('CodeRunner', 'CodeRunner.log')
-  #serve(app, host='0.0.0.0', port=8080)
-  uvicorn.run(app, host='0.0.0.0', port=8080)
+  uvicorn.run(app, host='127.0.0.1', port=8000)
