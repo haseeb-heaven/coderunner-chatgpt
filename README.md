@@ -1,5 +1,5 @@
 # Code Runner Plugin
-[cover_logo](https://github.com/haseeb-heaven/CodeRunner-Plugin/resources/logo.png?raw=true "")</br>
+![cover_logo](https://github.com/haseeb-heaven/CodeRunner-Plugin/blob/master/resources/logo.png?raw=true "")</br>
 [![Plugin](https://img.shields.io/badge/Code%20Runner-Plugin-blue)](https://coderunner-plugin.haseebmir.repl.co)
 [![Plugin - Manifest](https://img.shields.io/badge/Code%20Runner-Manifest-blue)](https://coderunner-plugin.haseebmir.repl.co/.well-known/ai-plugin.json)
 [![Plugin](https://img.shields.io/badge/Code%20Runner-Hosted-blue)](https://replit.com/@HaseebMir/CodeRunner-Plugin)
@@ -38,10 +38,16 @@ Once the local server is running:
 3. Select "Plugin store"</br>
 4. Select "Develop your own plugin"</br>
 5. Enter in `localhost:8000` since this is the URL the server is running on locally, then select "Find manifest file".</br>
-- ### Finding the plugin
-- [finding_plugin](https://github.com/haseeb-heaven/CodeRunner-Plugin/resources/coderunner_find_url.png?raw=true "")</br>
+- ### Finding the plugin.
+- Use **localhost:8000** to find the loccal version of plugin</br></br>
+- ![finding_plugin](https://github.com/haseeb-heaven/CodeRunner-Plugin/blob/master/resources/coderunner_find_local_plugin.png?raw=true "")</br></br>
+- Use **https://coderunner-plugin.haseebmir.repl.co** to find the hosted version of plugin</br></br>
+- ![finding_plugin](https://github.com/haseeb-heaven/CodeRunner-Plugin/blob/master/resources/coderunner_find_hosted_plugin.png?raw=true "")</br></br>
 - ### Installing the plugin
-- [install_plugin](https://github.com/haseeb-heaven/CodeRunner-Plugin/resources/coderunner_install_url.png?raw=true "")</br>
+- Installing the loccal version of plugin</br></br>
+- ![finding_plugin](https://github.com/haseeb-heaven/CodeRunner-Plugin/blob/master/resources/coderunner_install_local_plugin.png?raw=true "")</br></br>
+- Installing the hosted version of plugin</br></br>
+- ![finding_plugin](https://github.com/haseeb-heaven/CodeRunner-Plugin/blob/master/resources/coderunner_install_hosted_plugin.png?raw=true "")</br></br>
 
 ## General Information
 
@@ -58,21 +64,21 @@ To use Code Runner Plugin, follow these steps:
 - Use one of the following prompts in the chat box and press enter:
 
 ### Running your code.
-[run_code](https://github.com/haseeb-heaven/CodeRunner-Plugin/resources/coderunner_output.png?raw=true "")</br>
   - Write me a C++ program for factorial of a number and Run the program: This prompt will write a C++ program for the factorial of a number and then run the program.
   - Given the program [YOUR_CODE] and only compile the program: This prompt will compile the program [YOUR_CODE]. Please replace [YOUR_CODE] with your specific code when using this prompt.
+  ![run_code](https://github.com/haseeb-heaven/CodeRunner-Plugin/blob/master/resources/coderunner_output.png?raw=true "")</br>
 
 ### Saving your code.
-[save_code](https://github.com/haseeb-heaven/CodeRunner-Plugin/resources/coderunner_output_save.png?raw=true "")</br>
 - To save your code, use the following prompt in the chat box and press enter:
 
   - Save the program [YOUR_CODE] with filename [YOUR_FILENAME]: This prompt will save the program [YOUR_CODE] with filename [YOUR_FILENAME]. Please replace [YOUR_CODE] and [YOUR_FILENAME] with your specific code and filename respectively when using this prompt.
+![save_code](https://github.com/haseeb-heaven/CodeRunner-Plugin/blob/master/resources/coderunner_output_save.png?raw=true "")</br>
 
 ### Downloading your code.
-[download_code](https://github.com/haseeb-heaven/CodeRunner-Plugin/resources/coderunner_output_download.png?raw=true "")</br>
 - To download your code, use the following prompt in the chat box and press enter:
 
   - Download the code filename [YOUR_FILENAME]: This prompt will download the code with filename [YOUR_FILENAME]. Please replace [YOUR_FILENAME] with your specific filename when using this prompt.
+![download_code](https://github.com/haseeb-heaven/CodeRunner-Plugin/blob/master/resources/coderunner_output_download.png?raw=true "")</br>
 
 ## Features
 
@@ -86,7 +92,7 @@ Some of the features of Code Runner Plugin are:
 
 ## Help
 To get help with Code Runner Plugin, use the following prompt in the chat box and press enter: </br>
-[help](https://github.com/haseeb-heaven/CodeRunner-Plugin/resources/coderunner_help_url.png?raw=true "")</br>
+![help](https://github.com/haseeb-heaven/CodeRunner-Plugin/blob/master/resources/coderunner_help_url.png?raw=true "")</br>
 
 ## License and Author
 Code Runner Plugin is licensed under the [MIT License](https://github.com/haseeb-heaven/CodeRunner-Plugin/blob/main/LICENSE).</br>
