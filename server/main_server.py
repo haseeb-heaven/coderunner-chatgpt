@@ -1,13 +1,3 @@
-"""
-Description: This is ChatGPT Plugin for CodeRunner. Which can run and save code in 70+ languages.
-This is a FastAPI Web Server which is used to run the code and return the output.
-Server API : FastAPI.
-Language: Python.
-Date: 16/05/2023.
-Author : HeavenHM
-"""
-
-# Importing the required libraries.
 from fastapi import FastAPI, Request, Depends, Response
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -26,9 +16,8 @@ import random
 import string
 import os
 
-#defining the origin for CORS
 ORIGINS = [
-  "localhost:8000", "https://chat.openai.com"
+  "https://coderunner-plugin.haseebmir.repl.co/", "https://chat.openai.com"
 ]
 
 ## Main application for FastAPI Web Server
@@ -356,4 +345,4 @@ logger = configure_logger('CodeRunner', 'CodeRunner.log')
 # Will only work with python main.py
 if __name__ == "__main__":
   logger = configure_logger('CodeRunner', 'CodeRunner.log')
-  uvicorn.run(app, host='127.0.0.1', port=8000)
+  uvicorn.run(app, host='0.0.0.0', port=8080)

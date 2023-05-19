@@ -90,6 +90,14 @@ Some of the features of Code Runner Plugin are:
 - Ability to customize themes and output types for your coding environment.
 - Fast and reliable execution of code using the JDoodle Compiler API.
 
+## Localhost & Server Files.
+The localhost and server files are located in the following directories:
+- local: `main.py`
+- Server: `server/main.py`
+
+For demo purpose i also created this in Quart framework. The files are located in the following directories:
+- Quart Main: `server/main_quart.py`
+
 ## Help
 To get help with Code Runner Plugin, use the following prompt in the chat box and press enter: </br>
 ![help](https://github.com/haseeb-heaven/CodeRunner-Plugin/blob/master/resources/coderunner_help_url.png?raw=true "")</br>
