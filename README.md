@@ -98,6 +98,9 @@ The localhost and server files are located in the following directories:
 For demo purpose i also created this in Quart framework. The files are located in the following directories:
 - Quart Main: `server/main_quart.py`
 
+## Showcase - Demo of Plugin.</br>
+[![code_plugin_demo](https://img.youtube.com/vi/pcfAP3FEhMc/0.jpg)](https://youtube.com/shorts/pcfAP3FEhMc)</br>
+
 ## Help
 To get help with Code Runner Plugin, use the following prompt in the chat box and press enter: </br>
 ![help](https://github.com/haseeb-heaven/CodeRunner-Plugin/blob/master/resources/coderunner_help_url.png?raw=true "")</br>
