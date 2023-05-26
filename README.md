@@ -2,8 +2,8 @@
 ![cover_logo](https://github.com/haseeb-heaven/CodeRunner-Plugin/blob/master/resources/logo.png?raw=true "")</br>
 [![Plugin](https://img.shields.io/badge/Code%20Runner-Plugin-blue)](https://coderunner-plugin.haseebmir.repl.co)
 [![Plugin - Manifest](https://img.shields.io/badge/Code%20Runner-Manifest-blue)](https://coderunner-plugin.haseebmir.repl.co/.well-known/ai-plugin.json)
-[![Plugin](https://img.shields.io/badge/Code%20Runner-Hosted-blue)](https://replit.com/@HaseebMir/CodeRunner-Plugin)
-
+[![Plugin](https://img.shields.io/badge/Code%20Runner-Hosted-blue)](https://replit.com/@HaseebMir/CodeRunner-Plugin)</br>
+- **Support this Project** <a href="https://www.buymeacoffee.com/haseebheaven"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=haseebheaven&button_colour=40DCA5&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00" /></a>
 ## Introduction
 Check out my first awesome plugin for **ChatGPT** that lets you Run code in 70+ languages! 🙌👩‍💻👨‍💻 </br>
 This code will run this Plugin on your local machine with localhost:8000 as the URL. </br>
