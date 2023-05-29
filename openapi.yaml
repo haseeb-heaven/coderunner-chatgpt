@@ -3,7 +3,7 @@ info:
   title: Code Runner
   version: "1.0"
 servers:
-  - url:  http://localhost:8000
+  - url:  http://code-runner.streamlit.app
     description: Local server
 paths:
   /run_code:
@@ -39,7 +39,7 @@ paths:
                 properties:
                   download_link:
                     type: string
-                    example: 'https://coderunner-plugin.haseebmir.repl.co/download/hello_world.cpp'
+                    example: '/download/hello_world.cpp'
   /download/{filename}:
     get:
       summary: Download file

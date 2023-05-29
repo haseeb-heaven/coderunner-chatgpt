@@ -9,10 +9,10 @@
   },
   "api": {
     "type": "openapi",
-    "url": "http://localhost:8000/openapi.yaml",
+    "url": "http://code-runner.streamlit.app/openapi.yaml",
     "is_user_authenticated": false
   },
-  "logo_url": "http://localhost:8000/logo.png",
+  "logo_url": "http://code-runner.streamlit.app/logo.png",
   "contact_email": "haseebmir.hm@gmail.com",
   "legal_info_url": "https://merciful-mole.static.app/"
 }
