@@ -9,10 +9,10 @@
   },
   "api": {
     "type": "openapi",
-    "url": "http://code-runner.streamlit.app/openapi.yaml",
+    "url": "https://code-runner-plugin.vercel.app/openapi.yaml",
     "is_user_authenticated": false
   },
-  "logo_url": "http://code-runner.streamlit.app/logo.png",
+  "logo_url": "https://code-runner-plugin.vercel.app/logo.png",
   "contact_email": "haseebmir.hm@gmail.com",
   "legal_info_url": "https://merciful-mole.static.app/"
 }
