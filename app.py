@@ -25,7 +25,7 @@ import os
 
 #defining the origin for CORS
 ORIGINS = [
-  "code-runner.streamlit.app", "https://chat.openai.com"
+  "code-runner.vercel.app", "https://chat.openai.com"
 ]
 
 ## Main application for FastAPI Web Server
@@ -353,4 +353,4 @@ logger = configure_logger('CodeRunner', 'CodeRunner.log')
 # Will only work with python main.py
 if __name__ == "__main__":
   logger = configure_logger('CodeRunner', 'CodeRunner.log')
-  uvicorn.run(app, host='127.0.0.1', port=8000)
+  uvicorn.run(app, debug=True, reload=True) #Start the server with Debug and Reload flags.
