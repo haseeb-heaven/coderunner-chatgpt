@@ -22,7 +22,7 @@ from contextvars import ContextVar
 import random
 import string
 import os
-from python_runner import exec_python
+from python_runner import exec_python, execute_code
 
 #defining the origin for CORS
 ORIGINS = [
@@ -201,9 +201,12 @@ async def run_code():
 
     # Run the code locally if the language is python3.
     if language_code == 'python3':
-      output = exec_python(script)
-      response = {"output": output}
-      
+      response = {}
+      try:
+        output = exec_python(script)
+        response = {"output": output}
+      except Exception as e:
+       response = execute_code(script)
       logger.info(f"run_code: response is {response}")
       return response
 
@@ -411,8 +414,9 @@ if __name__ == "__main__":
     # Create missing directories
     make_dirs()
     
-    uvicorn.run("app:app",reload=True)
+    uvicorn.run(app,reload=True)
     write_log("CodeRunner started")
   except Exception as e:
     write_log(str(e))
+    print(str(e))
 
