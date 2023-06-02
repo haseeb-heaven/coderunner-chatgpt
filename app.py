@@ -22,6 +22,7 @@ from contextvars import ContextVar
 import random
 import string
 import os
+from python_runner import exec_python
 
 #defining the origin for CORS
 ORIGINS = [
@@ -40,9 +41,6 @@ app.add_middleware(
 
 # Mount the .well-known directory.
 app.mount("/.well-known", StaticFiles(directory=".well-known"), name="static")
-
-# Setup logging for the application.
-global logger
 
 # Context variable to store the request.
 # Credit - https://sl.bing.net/ib0YUGReKZg
@@ -71,10 +69,18 @@ lang_codes = {
   'swift': 'swift'
 }
 
+# Method to write logs to a file.
+def write_log(log_msg:str):
+  try:
+    with open('CodeRunner.log', 'a') as f:
+      f.write(log_msg + '\n')
+  except Exception as e:
+    print(str(e))
 
 #Method to configure logs.
 def configure_logger(name: str, filename: str):
   try:
+    global logger
     logger = logging.getLogger(name)
     logger.setLevel(logging.INFO)
 
@@ -85,9 +91,12 @@ def configure_logger(name: str, filename: str):
 
     logger.addHandler(file_handler)
   except Exception as e:
-    print(e)
+    write_log(e)
   return logger
 
+
+# Setup logging for the application.
+logger = configure_logger('CodeRunner', 'CodeRunner.log')
 
 def generate_code_id(response, length=10):
   try:
@@ -95,7 +104,7 @@ def generate_code_id(response, length=10):
     unique_id = ''.join(random.choice(characters) for i in range(length))
     response['id'] = unique_id
   except Exception as e:
-    print(e)
+    write_log(e)
   return response
 
 # Method to get the JDoodle client ID and secret.
@@ -156,14 +165,14 @@ def get_request():
   try:
     return request_var.get()
   except Exception as e:
-    print(f"get_request: {e}")
+    write_log(f"get_request: {e}")
 
 
 def set_request(request: Request):
   try:
     request_var.set(request)
   except Exception as e:
-    print(f"set_request: {e}")
+    write_log(f"set_request: {e}")
 
 
 @app.middleware("http")
@@ -173,9 +182,8 @@ async def set_request_middleware(request: Request, call_next):
     response = await call_next(request)
     return response
   except Exception as e:
-    print(f"set_request_middleware: {e}")
+    write_log(f"set_request_middleware: {e}")
   return None
-
 
 # Method to run the code.
 @app.post('/run_code')
@@ -190,6 +198,14 @@ async def run_code():
     # Convert the language to the JDoodle language code.
     language_code = lang_codes.get(language, language)
     logger.info(f"run_code: language_code is {language_code}")
+
+    # Run the code locally if the language is python3.
+    if language_code == 'python3':
+      output = exec_python(script)
+      response = {"output": output}
+      
+      logger.info(f"run_code: response is {response}")
+      return response
 
     # Declare input and compileOnly optional.
     input = data.get('input', None)
@@ -323,7 +339,7 @@ def get_credits_used():
 
     return credits_used
   except Exception as e:
-    logger.error(str(e))
+    write_log("Exception in get_credits_used: " + str(e))
 
 
 @app.get('/credit_limit')
@@ -339,7 +355,7 @@ def show_credits_spent():
 @app.get('/help')
 @app.get('/')
 async def help():
-  logger.info("help: Displayed for Plugin Guide")
+  write_log("help: Displayed for Plugin Guide")
   json_data = {
     "title":
     "Code Runner Guide",
@@ -379,12 +395,24 @@ async def help():
   }
   return json_data
 
+def make_dirs():
+  if not os.path.exists('codes'):
+    os.makedirs('codes')
+
 # Run the app.
 # Will only work with python main.py
 if __name__ == "__main__":
   try:
+    write_log("Starting CodeRunner")
+
     logger = configure_logger('CodeRunner', 'CodeRunner.log')
+    write_log("Logger configured")
+    
+    # Create missing directories
+    make_dirs()
+    
     uvicorn.run("app:app",reload=True)
+    write_log("CodeRunner started")
   except Exception as e:
-    print(str(e))
+    write_log(str(e))
 

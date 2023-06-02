@@ -3,8 +3,8 @@ info:
   title: Code Runner
   version: "1.0"
 servers:
-  - url:  http://code-runner-plugin.vercel.app
-    description: Local server
+  - url:  https://code-runner-plugin.vercel.app
+    description: Hosted server
 paths:
   /run_code:
     post:

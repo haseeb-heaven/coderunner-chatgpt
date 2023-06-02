@@ -1,0 +1,6 @@
+*.pyc
+*.pyo
+*.pyd
+*.so
+*.png
+*.log

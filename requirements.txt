@@ -5,3 +5,14 @@ uvicorn
 pydantic
 starlette
 contextvars
+pillow
+matplotlib
+pandas
+plotly
+requests
+keras
+scikit-learn
+tabulate
+librosa
+scipy
+numpy
