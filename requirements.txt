@@ -1,6 +1,5 @@
 fastapi
 aiofiles
-requests
 uvicorn
 pydantic
 starlette
@@ -8,7 +7,6 @@ contextvars
 pillow
 matplotlib
 pandas
+requests
 plotly
-keras
-scipy
 numpy
