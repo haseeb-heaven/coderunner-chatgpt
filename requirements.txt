@@ -4,9 +4,6 @@ uvicorn
 pydantic
 starlette
 contextvars
-pillow
 matplotlib
 pandas
 requests
-plotly
-numpy
