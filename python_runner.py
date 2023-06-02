@@ -21,7 +21,7 @@ def exec_python(code):
     except Exception as e:
       return f"exec_python: {e}"
     
-    try
+    try:
       # Delete the file
       os.remove(file_name)
     except Exception as e:
