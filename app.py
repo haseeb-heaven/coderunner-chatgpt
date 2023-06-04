@@ -8,10 +8,11 @@ Author : HeavenHM
 """
 
 # Importing the required libraries.
+import datetime
+from io import StringIO
 from fastapi import FastAPI, Request, Response
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse,StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
-import aiofiles
 import requests
 import json
 import logging
@@ -23,6 +24,7 @@ import random
 import string
 import os
 from python_runner import exec_python, execute_code
+from MongoDBConnector import MongoDB
 
 #defining the origin for CORS
 ORIGINS = [
@@ -73,9 +75,16 @@ lang_codes = {
 def write_log(log_msg:str):
   try:
     with open('CodeRunner.log', 'a') as f:
-      f.write(log_msg + '\n')
+      f.write(str(datetime.datetime.now()) + " " + log_msg + "\n")
   except Exception as e:
     print(str(e))
+
+# setting the database
+global database
+try:
+  database = MongoDB()
+except Exception as e:
+  write_log(str(e))
 
 #Method to configure logs.
 def configure_logger(name: str, filename: str):
@@ -98,14 +107,14 @@ def configure_logger(name: str, filename: str):
 # Setup logging for the application.
 logger = configure_logger('CodeRunner', 'CodeRunner.log')
 
-def generate_code_id(response, length=10):
+def generate_code_id(length=10):
   try:
     characters = string.ascii_letters + string.digits
     unique_id = ''.join(random.choice(characters) for i in range(length))
-    response['id'] = unique_id
+    return unique_id
   except Exception as e:
     write_log(e)
-  return response
+    return ""
 
 # Method to get the JDoodle client ID and secret.
 def get_jdoodle_client_1():
@@ -243,7 +252,8 @@ async def run_code():
 
     # Check reponse status code before appending the code id.
     if response_data.status_code == 200:
-      response = generate_code_id(response)
+      unique_id = generate_code_id(response)
+      response['id'] = unique_id
 
     logger.info(f"run_code: {response}")
   except Exception as e:
@@ -255,11 +265,14 @@ async def run_code():
 @app.post('/save_code')
 async def save_code():
   try:
+    global database
     request = get_request()
     data = await request.json()  # Get JSON data from request
     logger.info(f"save_code: data is {data}")
     filename = data.get('filename')
     code = data.get('code')
+    code_id = generate_code_id()
+    language = filename.split('.')[-1]
 
     if filename is None or code is None:
       return {"error": "filename or code not provided"}, 400
@@ -268,8 +281,13 @@ async def save_code():
     filepath = os.path.join(directory, filename)
 
     logger.info(f"save_code: filename is {filepath} and code was present")
-    async with aiofiles.open(filepath, 'w') as f:
-      await f.write(code)
+    
+    # Saving the code to database
+    if database is not None:
+      database.save_code(code,language,code_id,filename)
+    else:
+      logger.error(f"Database not connected {database}")
+    
     logger.info(f"save_code: wrote code to file {filepath}")
     download_link = f'{request.url_for("download",filename=filename)}'
     logger.info(f"save_code: download link is {download_link}")
@@ -285,10 +303,14 @@ async def save_code():
 @app.get('/download/{filename}')
 async def download(filename: str):
   try:
-    directory = 'codes'
-    filepath = os.path.join(directory, filename)
-    logger.info(f"download filename is {filepath}")
-    return FileResponse(filepath, filename=filepath)
+    code = database.find_code(filename)
+    # create a file-like object with the code
+    code_file = StringIO(code)
+    # create a streaming response with the file-like object
+    response = StreamingResponse(code_file, media_type="text/plain")
+    # set the content-disposition header to indicate a file download
+    response.headers["Content-Disposition"] = f"attachment; filename={filename}"
+    return response
   except Exception as e:
     logger.error(f"download: {e}")
 
@@ -402,6 +424,18 @@ def make_dirs():
   if not os.path.exists('codes'):
     os.makedirs('codes')
 
+def setup_db():
+  try:
+    global database
+    if database is None:
+      database = MongoDB()
+      write_log(f"Database connected successfully {database}")
+    else:
+      write_log("Database already connected")
+  except Exception as e:
+    write_log(str(e))
+
+
 # Run the app.
 # Will only work with python main.py
 if __name__ == "__main__":
@@ -412,11 +446,13 @@ if __name__ == "__main__":
     write_log("Logger configured")
     
     # Create missing directories
-    make_dirs()
+    #make_dirs()
     
-    uvicorn.run(app,reload=True)
+    # setting the database
+    setup_db()
+
+    uvicorn.run("app:app",reload=True)
     write_log("CodeRunner started")
   except Exception as e:
     write_log(str(e))
-    print(str(e))
 

@@ -7,3 +7,5 @@ contextvars
 matplotlib
 pandas
 requests
+pymongo
+python-dotenv
