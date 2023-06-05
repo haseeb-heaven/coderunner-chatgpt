@@ -539,7 +539,6 @@ if __name__ == "__main__":
   try:
     write_log("Starting CodeRunner")
     setup_db()
-    database.reset_database()
     uvicorn.run(app)
     write_log("CodeRunner started")
   except Exception as e:
