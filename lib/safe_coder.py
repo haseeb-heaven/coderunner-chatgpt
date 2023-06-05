@@ -74,17 +74,13 @@ harmful_prompts = [
   'change',
   'shift',
    # Blacklisted files
-  'bardcode_interpreter.py', 
-  'bardcoder.py',
-  'bardcoder_lib.py',
-  'bardcoder',
-  'bardcoder_lib',
-  'bardcode_interpreter',
-  'blacklist_commands.py',
-  'blacklist_commands',
+  'mongo_db.py',  
+  'safe_coder.py',
+  'python_runner.py',
+  'app.py',
+  'python_runner',
+  'mongo_db.py',
   'requirements.txt',
-  'clear_cache.sh',
-  'code_runner.sh'
 ]
 
 harmful_commands_python = [
@@ -209,17 +205,13 @@ harmful_commands_python = [
   'os.mkdir',
   'os.makedirs',
   # Blacklisted files
-  'bardcode_interpreter.py',  
-  'bardcoder.py',
-  'bardcoder_lib.py',
-  'bardcoder',
-  'bardcoder_lib',
-  'bardcode_interpreter',
-  'blacklist_commands.py',
-  'blacklist_commands',
+  'mongo_db.py',  
+  'safe_coder.py',
+  'python_runner.py',
+  'app.py',
+  'python_runner',
+  'mongo_db.py',
   'requirements.txt',
-  'clear_cache.sh',
-  'code_runner.sh'
   'dd',  # Additional shell commands  # Can be used to write and backup raw disk images
   'gksudo',  # Graphical sudo
   'lshw',  # Can reveal hardware details

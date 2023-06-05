@@ -28,10 +28,10 @@ import string
 import os
 from lib.safe_coder import is_code_safe
 from lib.python_runner import exec_python, execute_code
-from lib.MongoDBConnector import MongoDB
+from lib.mongo_db import MongoDB
 
-#plugin_url = "code-runner-plugin.vercel.app"
-plugin_url = "http://localhost:8000"
+# defining the plugin url
+plugin_url = "code-runner-plugin.vercel.app"
 
 global init_app
 init_app = False
@@ -270,7 +270,7 @@ async def run_code():
           # Use a list comprehension to filter out lines that contain "show()"
           script = "\n".join([line for line in script.splitlines() if "show()" not in line])
           
-          if safe_code:  
+          if safe_code:
             response = execute_code(script)
             logger.info(f"run_code: executed script")
             
@@ -296,7 +296,7 @@ async def run_code():
             error_response = f"Cannot run the code\nbecause of illegal command found '{code_command}' in code snippet '{code_snippet}'"
             logger.error(f"run_code Error: {error_response}")
             return {"error": error_response}
-            
+        return response
       except Exception as e:
         stack_trace = traceback.format_exc()
         logger.error(f"run_code: failed to execute script: {e}\nStack: {stack_trace}")
@@ -554,14 +554,9 @@ def setup_db():
 # Will only work with python main.py
 if __name__ == "__main__":
   try:
-    write_log("Starting CodeRunner")    
-    # Create missing directories
-    #make_dirs()
-    
-    # setting the database
-    #setup_db()
-
-    uvicorn.run("app:app",reload=True)
+    write_log("Starting CodeRunner")
+    database.reset_database()
+    uvicorn.run(app)
     write_log("CodeRunner started")
   except Exception as e:
     write_log(str(e))
