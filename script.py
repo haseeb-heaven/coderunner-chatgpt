@@ -109,17 +109,18 @@ def configure_logger(name: str, filename: str):
   return logger
 
 # setting the database and logs
-try:
-  #global init_app
-  if not init_app:
-    database = MongoDB()
-    logger = configure_logger('CodeRunner', 'CodeRunner.log')
-    write_log("Logger and Database connected successfully")
-    init_app = True
-  else:
-    write_log("Database and Logger already connected")
-except Exception as e:
-  write_log("Exception in setting database and logs: " + str(e))
+database = MongoDB()
+# try:
+#   #global init_app
+#   if not init_app:
+#     database = MongoDB()
+#     logger = configure_logger('CodeRunner', 'CodeRunner.log')
+#     write_log("Logger and Database connected successfully")
+#     init_app = True
+#   else:
+#     write_log("Database and Logger already connected")
+# except Exception as e:
+#   write_log("Exception in setting database and logs: " + str(e))
 
 def generate_code_id(length=10):
   try:
@@ -554,12 +555,12 @@ def setup_db():
 
 # Run the app.
 # Will only work with python main.py
-#if __name__ == "__main__":
-try:
-  write_log("Starting CodeRunner")
-  setup_db()
-  uvicorn.run(app)
-  write_log("CodeRunner started")
-except Exception as e:
-  write_log(str(e))
+if __name__ == "__main__":
+  try:
+    write_log("Starting CodeRunner")
+    setup_db()
+    uvicorn.run(app)
+    write_log("CodeRunner started")
+  except Exception as e:
+    write_log(str(e))
 
