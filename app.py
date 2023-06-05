@@ -84,8 +84,9 @@ lang_codes = {
 # Method to write logs to a file.
 def write_log(log_msg:str):
   try:
-    with open('CodeRunner.log', 'a') as f:
-      f.write(str(datetime.datetime.now()) + " " + log_msg + "\n")
+    print(str(datetime.datetime.now()) + " " + log_msg)
+    #with open('CodeRunner.log', 'a') as f:
+      #f.write(str(datetime.datetime.now()) + " " + log_msg + "\n")
   except Exception as e:
     print(str(e))
 
@@ -483,7 +484,6 @@ def get_credits_used():
 
 @app.get('/credit_limit')
 def show_credits_spent():
-  credit_spent = 0
   try:
     credits_used = get_credits_used()
     return {"credits:": credits_used}
