@@ -35,8 +35,10 @@ plugin_url = "code-runner-plugin.vercel.app"
 chatgpt_url = "chat.openai.com"
 credit_spent_url = "https://api.jdoodle.com/v1/credit-spent"
 compiler_url = "https://api.jdoodle.com/v1/execute"
-    
+
+
 # setting the database.
+global database
 try:
   # setting the database
   database = MongoDB()
@@ -186,7 +188,7 @@ async def set_request_middleware(request: Request, call_next):
 # Define a method to save the plot in mongodb
 def save_plot(filename):
     output = {}
-
+    global database
     write_log(f"save_plot: executed script")
     
     # Save the plot as an image file in a buffer
@@ -325,6 +327,7 @@ async def run_code():
 @app.post('/save_code')
 async def save_code():
   try:
+    global database
     request = get_request()
     data = await request.json()  # Get JSON data from request
     write_log(f"save_code: data is {data}")
@@ -346,6 +349,7 @@ async def save_code():
       database.save_code(code,language,code_id,filename)
     else:
       write_log(f"Database not connected {database}")
+      return {"error": "Database not connected"}, 400
     
     write_log(f"save_code: wrote code to file {filepath}")
     download_link = f'{request.url_for("download",filename=filename)}'
@@ -361,6 +365,7 @@ async def save_code():
 @app.get('/download/{filename}')
 async def download(filename: str):
   try:
+    global database
     # check the file extension
     if filename.endswith(".png"):
       write_log(f"download: image filename is {filename}")
