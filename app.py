@@ -557,7 +557,7 @@ def setup_db():
 if __name__ == "__main__":
   try:
     write_log("Starting CodeRunner")
-    database.reset_database()
+    setup_db()
     uvicorn.run(app)
     write_log("CodeRunner started")
   except Exception as e:
