@@ -27,20 +27,26 @@ import random
 import string
 import os
 from lib.safe_coder import is_code_safe
-from lib.python_runner import exec_python, execute_code
+from lib.python_runner import execute_code
 from lib.mongo_db import MongoDB
 
-# defining the plugin url
+# defining the url's
 plugin_url = "code-runner-plugin.vercel.app"
-
-global init_app
-init_app = False
-# setting the database and logs
-database = MongoDB()
+chatgpt_url = "chat.openai.com"
+credit_spent_url = "https://api.jdoodle.com/v1/credit-spent"
+compiler_url = "https://api.jdoodle.com/v1/execute"
+    
+# setting the database.
+try:
+  # setting the database
+  database = MongoDB()
+except Exception as e:
+  print("Exception while connecting to the database : " + str(e))
+  
 
 #defining the origin for CORS
 ORIGINS = [
- plugin_url , "https://chat.openai.com"
+ plugin_url ,chatgpt_url
 ]
 
 ## Main application for FastAPI Web Server
@@ -90,21 +96,6 @@ def write_log(log_msg:str):
   except Exception as e:
     print(str(e))
 
-#Method to configure logs.
-def configure_logger(name: str, filename: str):
-  try:
-    logger = logging.getLogger(name)
-    logger.setLevel(logging.INFO)
-
-    file_handler = logging.FileHandler(filename)
-    formatter = logging.Formatter(
-      '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    file_handler.setFormatter(formatter)
-
-    logger.addHandler(file_handler)
-  except Exception as e:
-    write_log(e)
-  return logger
 
 def generate_code_id(length=10):
   try:
@@ -153,15 +144,14 @@ def get_jdoodle_client():
 def get_jdoodle_credit_spent():
   try:
     client_id, client_secret = get_jdoodle_client_1()
-    url = "https://api.jdoodle.com/v1/credit-spent"
     headers = {
       'Content-Type': 'application/json',
       'X-Requested-With': 'XMLHttpRequest',
     }
 
     body = {"clientId": client_id, "clientSecret": client_secret}
-    write_log(f"get_jdoodle_credit_spent: sending request with url {url}")
-    credit_spent = requests.post(url, headers=headers, data=json.dumps(body))
+    write_log(f"get_jdoodle_credit_spent: sending request with url {credit_spent_url}")
+    credit_spent = requests.post(credit_spent_url, headers=headers, data=json.dumps(body))
     write_log(f"get_jdoodle_credit_spent: {credit_spent}")
   except Exception as e:
     write_log(f"get_jdoodle_credit_spent: {e}")
@@ -296,7 +286,6 @@ async def run_code():
 
     # Get the JDoodle client ID and secret.
     client_id, client_secret = get_jdoodle_client()
-    compiler_url = "https://api.jdoodle.com/v1/execute"
     headers = {
       'Content-Type': 'application/json',
       'X-Requested-With': 'XMLHttpRequest',
