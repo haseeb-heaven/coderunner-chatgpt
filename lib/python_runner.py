@@ -1,6 +1,8 @@
 import random
 import string
 import os
+import io
+import contextlib
 
 def exec_python(code):
     try:
@@ -30,22 +32,18 @@ def exec_python(code):
     return output
 
 # Method to executre the code using exec.
-def execute_code(code: str):
-  try:
-    output = {}
-    exec(code, output)
-    # return the output.
-    print(f"execute_code: output is {output}")
-    # check the length of the output dictionary
-    if len(output) > 0:
-      # use the last key in the dictionary
-      key = list(output.keys())[-1]
-      return output[key]
-    else:
-      # return None if the dictionary is empty
-      return None
-  except Exception as e:
-    print(f"execute_code: {e}")
+def execute_code(code):
+
+    # Create a string buffer to store the output
+    buffer = io.StringIO()
+    # Redirect the standard output to the buffer
+    with contextlib.redirect_stdout(buffer):
+        # Execute the code as Python code
+        exec(code)
+    # Get the output from the buffer
+    output = buffer.getvalue()
+    # Return the output as a string
+    return output
 
 # Define a function to generate a random file name
 def generate_file_name():

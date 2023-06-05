@@ -10,9 +10,12 @@ Author : HeavenHM
 # Importing the required libraries.
 import datetime
 from io import StringIO
+import io
+import traceback
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import FileResponse,StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
+import gridfs
 import requests
 import json
 import logging
@@ -23,12 +26,19 @@ from contextvars import ContextVar
 import random
 import string
 import os
-from python_runner import exec_python, execute_code
-from MongoDBConnector import MongoDB
+from lib.safe_coder import is_code_safe
+from lib.python_runner import exec_python, execute_code
+from lib.MongoDBConnector import MongoDB
+
+#plugin_url = "code-runner-plugin.vercel.app"
+plugin_url = "http://localhost:8000"
+
+global init_app
+init_app = False
 
 #defining the origin for CORS
 ORIGINS = [
-  "code-runner-plugin.vercel.app", "https://chat.openai.com"
+ plugin_url , "https://chat.openai.com"
 ]
 
 ## Main application for FastAPI Web Server
@@ -79,17 +89,9 @@ def write_log(log_msg:str):
   except Exception as e:
     print(str(e))
 
-# setting the database
-global database
-try:
-  database = MongoDB()
-except Exception as e:
-  write_log(str(e))
-
 #Method to configure logs.
 def configure_logger(name: str, filename: str):
   try:
-    global logger
     logger = logging.getLogger(name)
     logger.setLevel(logging.INFO)
 
@@ -103,9 +105,18 @@ def configure_logger(name: str, filename: str):
     write_log(e)
   return logger
 
-
-# Setup logging for the application.
-logger = configure_logger('CodeRunner', 'CodeRunner.log')
+# setting the database and logs
+try:
+  #global init_app
+  if not init_app:
+    database = MongoDB()
+    logger = configure_logger('CodeRunner', 'CodeRunner.log')
+    write_log("Logger and Database connected successfully")
+    init_app = True
+  else:
+    write_log("Database and Logger already connected")
+except Exception as e:
+  write_log("Exception in setting database and logs: " + str(e))
 
 def generate_code_id(length=10):
   try:
@@ -194,6 +205,32 @@ async def set_request_middleware(request: Request, call_next):
     write_log(f"set_request_middleware: {e}")
   return None
 
+# Define a method to save the plot in mongodb
+def save_plot(filename):
+    global database
+    output = {}
+
+    logger.info(f"save_plot: executed script")
+    
+    # Save the plot as an image file in a buffer
+    buffer = io.BytesIO()
+    logger.info(f"save_plot: saving plot")
+    
+    # Using matplotlib to save the plot as an image file in a buffer
+    import matplotlib.pyplot as plt
+    plt.savefig(buffer, format='png')
+    logger.info(f"save_plot: saved plot")
+
+    # Get the gridfs bucket object from the database object with the bucket name 'graphs'
+    bucket = gridfs.GridFSBucket(database.db, bucket_name='graphs')
+    logger.info(f"save_plot: got gridfs bucket object")
+    
+    # Store the image file in mongodb using the bucket object
+    file_id = bucket.upload_from_stream(filename, buffer.getvalue())
+    logger.info(f"save_plot: stored image file in mongodb")
+    # Return the file id
+    return output
+
 # Method to run the code.
 @app.post('/run_code')
 async def run_code():
@@ -206,18 +243,65 @@ async def run_code():
 
     # Convert the language to the JDoodle language code.
     language_code = lang_codes.get(language, language)
-    logger.info(f"run_code: language_code is {language_code}")
+    logger.info(f"run_code: language code is {language_code}")
 
     # Run the code locally if the language is python3.
     if language_code == 'python3':
       response = {}
       try:
-        output = exec_python(script)
-        response = {"output": output}
+        write_log("Trying to run Python code locally with all Libs installed.")
+        graph_file = ""
+        
+        # Execute the code in the script.
+        safe_code_dict = is_code_safe(script)
+        # Get tuple from list of tuples code_safe_dict
+        safe_code = safe_code_dict[0][0]
+        code_command = safe_code_dict[0][1]
+        code_snippet = safe_code_dict[0][2]
+
+        # check is script has graphic libraries imported like matplotlib, seaborn, etc.
+        if any(library in script for library in ['import matplotlib', 'import seaborn', 'import plotly']):
+          write_log("Graphic libraries found in script. Trying to run Python code locally with all Libs installed.")
+          
+          # generate random name for graph file.
+          graph_file = f"graph_{random.randrange(1, 100000)}.png"
+
+          # replacing the line if it contains show() method
+          # Use a list comprehension to filter out lines that contain "show()"
+          script = "\n".join([line for line in script.splitlines() if "show()" not in line])
+          
+          if safe_code:  
+            response = execute_code(script)
+            logger.info(f"run_code: executed script")
+            
+            # Save the plot as an image file in a buffer
+            logger.info(f"run_code: saving plot")
+            response = save_plot(graph_file)
+
+            if response.__len__() == 0:
+              response = {"success":f"{plugin_url}/download/{graph_file}"}
+              
+            # Return the response as JSON
+            logger.info(f"run_code: response is {response}")
+          else:
+            error_response = f"Cannot run the code\nbecause of illegal command found '{code_command}' in code snippet '{code_snippet}'"
+            logger.error(f"run_code Error: {error_response}")
+            return {"error": error_response}
+        else:
+          logger.info(f"run_code: running script locally no graphic libraries found")
+          if safe_code:
+            response = execute_code(script)
+            return {"result": response}
+          else:
+            error_response = f"Cannot run the code\nbecause of illegal command found '{code_command}' in code snippet '{code_snippet}'"
+            logger.error(f"run_code Error: {error_response}")
+            return {"error": error_response}
+            
       except Exception as e:
-       response = execute_code(script)
-      logger.info(f"run_code: response is {response}")
-      return response
+        stack_trace = traceback.format_exc()
+        logger.error(f"run_code: failed to execute script: {e}\nStack: {stack_trace}")
+        raise e
+
 
     # Declare input and compileOnly optional.
     input = data.get('input', None)
@@ -298,21 +382,51 @@ async def save_code():
     logger.error(f"save_code: {e}")
   return output
 
-
 # Method to download the file.
 @app.get('/download/{filename}')
 async def download(filename: str):
   try:
-    code = database.find_code(filename)
-    # create a file-like object with the code
-    code_file = StringIO(code)
-    # create a streaming response with the file-like object
-    response = StreamingResponse(code_file, media_type="text/plain")
-    # set the content-disposition header to indicate a file download
-    response.headers["Content-Disposition"] = f"attachment; filename={filename}"
-    return response
+    global database
+    # check the file extension
+    if filename.endswith(".png"):
+      logger.info(f"download: image filename is {filename}")
+      # get the file-like object from gridfs by its filename
+      file = database.graphs.find_one({"filename": filename})
+      # check if the file exists
+      if file:
+        # create a streaming response with the file-like object
+        response = StreamingResponse(file, media_type="image/png")
+        # set the content-disposition header to indicate a file download
+        response.headers["Content-Disposition"] = f"attachment; filename={filename}"
+        return response
+      else:
+        logger.error(f"download: failed to get file by filename {filename}")
+        # handle the case when the file is not found
+        return {"error": "File not found"}
+    else:
+      logger.info(f"download: code filename is {filename}")
+      # get the code from the database by its filename
+      code = database.find_code(filename)
+      # create a file-like object with the code
+      if code:
+        code_file = StringIO(code)
+        if code_file:
+          # create a streaming response with the file-like object
+          response = StreamingResponse(code_file, media_type="text/plain")
+          # set the content-disposition header to indicate a file download
+          response.headers["Content-Disposition"] = f"attachment; filename={filename}"
+        else:
+          logger.error(f"download: failed to get code by filename {filename}")
+          # handle the case when the file is not found
+          return {"error": "File not found"}
+      else:
+        logger.error(f"download: failed to get code by filename {filename}")
+        # handle the case when the file is not found
+        return {"error": "File not found"}
+      return response
   except Exception as e:
     logger.error(f"download: {e}")
+    return {"error": str(e)}
 
 
 # Plugin logo.
@@ -440,16 +554,12 @@ def setup_db():
 # Will only work with python main.py
 if __name__ == "__main__":
   try:
-    write_log("Starting CodeRunner")
-
-    logger = configure_logger('CodeRunner', 'CodeRunner.log')
-    write_log("Logger configured")
-    
+    write_log("Starting CodeRunner")    
     # Create missing directories
     #make_dirs()
     
     # setting the database
-    setup_db()
+    #setup_db()
 
     uvicorn.run("app:app",reload=True)
     write_log("CodeRunner started")

@@ -28,14 +28,6 @@ class MongoDB:
         #Creating gridfs instances for graphs and codes collections
         self.graphs = GridFS(self.db, "graphs")
         self.codes = GridFS(self.db, "codes")
-    
-    def _load_env(self):
-        #Loading environment variables
-        load_dotenv()
-        self.MONGO_DB_API_KEY = os.getenv("MONGO_DB_API_KEY")
-        self.DATA_API_KEY = os.getenv("DATA_API_KEY")
-        self.DATA_API_URL = os.getenv("DATA_API_URL")
-        self.MONGODB_URI = os.getenv("MONGODB_URI")
         
     def _connect(self):
         #Connecting to the database using the URI
@@ -47,6 +39,13 @@ class MongoDB:
             self.logger.error(f"Failed to connect to the database: {e}")
             raise e
 
+    def _load_env(self):
+        #Loading environment variables
+        load_dotenv()
+        self.MONGO_DB_API_KEY = os.getenv("MONGO_DB_API_KEY")
+        self.DATA_API_KEY = os.getenv("DATA_API_KEY")
+        self.DATA_API_URL = os.getenv("DATA_API_URL")
+        self.MONGODB_URI = os.getenv("MONGODB_URI")
     
     def _create_logger(self):
         logger_file = __file__.replace(".py", ".log")
@@ -296,5 +295,12 @@ class MongoDB:
     
     def delete_all_images(self):
         return self._delete_all_documents("graphs")
+    
+    def reset_database(self):
+        self.delete_all_codes()
+        self.delete_all_images()
+        self._delete_all_documents("graphs.files")
+        self._delete_all_documents("graphs.chunks")
+        self.logger.info("Resetting database to initial state")
 
 
