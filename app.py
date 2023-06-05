@@ -35,6 +35,8 @@ plugin_url = "code-runner-plugin.vercel.app"
 
 global init_app
 init_app = False
+database = None
+logger = None
 
 #defining the origin for CORS
 ORIGINS = [
