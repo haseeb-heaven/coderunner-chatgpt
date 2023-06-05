@@ -8,7 +8,7 @@ Author : HeavenHM
 """
 
 # Importing the required libraries.
-import datetime
+from datetime import datetime
 from io import StringIO
 import io
 import traceback
@@ -35,8 +35,8 @@ plugin_url = "code-runner-plugin.vercel.app"
 
 global init_app
 init_app = False
-database = None
-logger = None
+# setting the database and logs
+database = MongoDB()
 
 #defining the origin for CORS
 ORIGINS = [
@@ -86,9 +86,7 @@ lang_codes = {
 # Method to write logs to a file.
 def write_log(log_msg:str):
   try:
-    print(str(datetime.datetime.now()) + " " + log_msg)
-    #with open('CodeRunner.log', 'a') as f:
-      #f.write(str(datetime.datetime.now()) + " " + log_msg + "\n")
+    print(str(datetime.now()) + " " + log_msg)
   except Exception as e:
     print(str(e))
 
@@ -107,20 +105,6 @@ def configure_logger(name: str, filename: str):
   except Exception as e:
     write_log(e)
   return logger
-
-# setting the database and logs
-database = MongoDB()
-# try:
-#   #global init_app
-#   if not init_app:
-#     database = MongoDB()
-#     logger = configure_logger('CodeRunner', 'CodeRunner.log')
-#     write_log("Logger and Database connected successfully")
-#     init_app = True
-#   else:
-#     write_log("Database and Logger already connected")
-# except Exception as e:
-#   write_log("Exception in setting database and logs: " + str(e))
 
 def generate_code_id(length=10):
   try:
@@ -211,7 +195,6 @@ async def set_request_middleware(request: Request, call_next):
 
 # Define a method to save the plot in mongodb
 def save_plot(filename):
-    global database
     output = {}
 
     write_log(f"save_plot: executed script")
@@ -353,7 +336,6 @@ async def run_code():
 @app.post('/save_code')
 async def save_code():
   try:
-    global database
     request = get_request()
     data = await request.json()  # Get JSON data from request
     write_log(f"save_code: data is {data}")
@@ -390,7 +372,6 @@ async def save_code():
 @app.get('/download/{filename}')
 async def download(filename: str):
   try:
-    global database
     # check the file extension
     if filename.endswith(".png"):
       write_log(f"download: image filename is {filename}")
@@ -543,7 +524,6 @@ def make_dirs():
 
 def setup_db():
   try:
-    global database
     if database is None:
       database = MongoDB()
       write_log(f"Database connected successfully {database}")
@@ -559,6 +539,7 @@ if __name__ == "__main__":
   try:
     write_log("Starting CodeRunner")
     setup_db()
+    database.reset_database()
     uvicorn.run(app)
     write_log("CodeRunner started")
   except Exception as e:
