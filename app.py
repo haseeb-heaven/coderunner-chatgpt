@@ -151,16 +151,16 @@ def get_jdoodle_client_2():
 def get_jdoodle_client():
   try:
     index = 1
-    logger.info(f"get_jdoodle_client: Getting jdoodle client {index}")
+    write_log(f"get_jdoodle_client: Getting jdoodle client {index}")
     credits_used = get_credits_used()
     if credits_used < 200:
-      logger.info("get_jdoodle_client: return client_1")
+      write_log("get_jdoodle_client: return client_1")
       return get_jdoodle_client_1()
     else:
-      logger.error("Credits exhaused for client_1")
-      logger.info("get_jdoodle_client: return client_2")
+      write_log("Credits exhaused for client_1")
+      write_log("get_jdoodle_client: return client_2")
   except Exception as e:
-    logger.error(f"get_jdoodle_client: {e}")
+    write_log(f"get_jdoodle_client: {e}")
     return get_jdoodle_client_2()
 
 
@@ -175,11 +175,11 @@ def get_jdoodle_credit_spent():
     }
 
     body = {"clientId": client_id, "clientSecret": client_secret}
-    logger.info(f"get_jdoodle_credit_spent: sending request with url {url}")
+    write_log(f"get_jdoodle_credit_spent: sending request with url {url}")
     credit_spent = requests.post(url, headers=headers, data=json.dumps(body))
-    logger.info(f"get_jdoodle_credit_spent: {credit_spent}")
+    write_log(f"get_jdoodle_credit_spent: {credit_spent}")
   except Exception as e:
-    logger.error(f"get_jdoodle_credit_spent: {e}")
+    write_log(f"get_jdoodle_credit_spent: {e}")
   return credit_spent
 
 
@@ -213,24 +213,24 @@ def save_plot(filename):
     global database
     output = {}
 
-    logger.info(f"save_plot: executed script")
+    write_log(f"save_plot: executed script")
     
     # Save the plot as an image file in a buffer
     buffer = io.BytesIO()
-    logger.info(f"save_plot: saving plot")
+    write_log(f"save_plot: saving plot")
     
     # Using matplotlib to save the plot as an image file in a buffer
     import matplotlib.pyplot as plt
     plt.savefig(buffer, format='png')
-    logger.info(f"save_plot: saved plot")
+    write_log(f"save_plot: saved plot")
 
     # Get the gridfs bucket object from the database object with the bucket name 'graphs'
     bucket = gridfs.GridFSBucket(database.db, bucket_name='graphs')
-    logger.info(f"save_plot: got gridfs bucket object")
+    write_log(f"save_plot: got gridfs bucket object")
     
     # Store the image file in mongodb using the bucket object
     file_id = bucket.upload_from_stream(filename, buffer.getvalue())
-    logger.info(f"save_plot: stored image file in mongodb")
+    write_log(f"save_plot: stored image file in mongodb")
     # Return the file id
     return output
 
@@ -240,13 +240,13 @@ async def run_code():
   try:
     request = get_request()
     data = await request.json()
-    logger.info(f"run_code: data is {data}")
+    write_log(f"run_code: data is {data}")
     script = data.get('script')
     language = data.get('language')
 
     # Convert the language to the JDoodle language code.
     language_code = lang_codes.get(language, language)
-    logger.info(f"run_code: language code is {language_code}")
+    write_log(f"run_code: language code is {language_code}")
 
     # Run the code locally if the language is python3.
     if language_code == 'python3':
@@ -275,34 +275,34 @@ async def run_code():
           
           if safe_code:
             response = execute_code(script)
-            logger.info(f"run_code: executed script")
+            write_log(f"run_code: executed script")
             
             # Save the plot as an image file in a buffer
-            logger.info(f"run_code: saving plot")
+            write_log(f"run_code: saving plot")
             response = save_plot(graph_file)
 
             if response.__len__() == 0:
               response = {"success":f"{plugin_url}/download/{graph_file}"}
               
             # Return the response as JSON
-            logger.info(f"run_code: response is {response}")
+            write_log(f"run_code: response is {response}")
           else:
             error_response = f"Cannot run the code\nbecause of illegal command found '{code_command}' in code snippet '{code_snippet}'"
-            logger.error(f"run_code Error: {error_response}")
+            write_log(f"run_code Error: {error_response}")
             return {"error": error_response}
         else:
-          logger.info(f"run_code: running script locally no graphic libraries found")
+          write_log(f"run_code: running script locally no graphic libraries found")
           if safe_code:
             response = execute_code(script)
             return {"result": response}
           else:
             error_response = f"Cannot run the code\nbecause of illegal command found '{code_command}' in code snippet '{code_snippet}'"
-            logger.error(f"run_code Error: {error_response}")
+            write_log(f"run_code Error: {error_response}")
             return {"error": error_response}
         return response
       except Exception as e:
         stack_trace = traceback.format_exc()
-        logger.error(f"run_code: failed to execute script: {e}\nStack: {stack_trace}")
+        write_log(f"run_code: failed to execute script: {e}\nStack: {stack_trace}")
         raise e
 
 
@@ -333,7 +333,7 @@ async def run_code():
       for k, v in body.items() if k not in ['clientId', 'clientSecret']
     }
 
-    logger.info(f"run_code: body is {body_filtered}")
+    write_log(f"run_code: body is {body_filtered}")
     response_data = requests.post(compiler_url,headers=headers,data=json.dumps(body))
     response = json.loads(response_data.content.decode('utf-8'))
 
@@ -342,7 +342,7 @@ async def run_code():
       unique_id = generate_code_id(response)
       response['id'] = unique_id
 
-    logger.info(f"run_code: {response}")
+    write_log(f"run_code: {response}")
   except Exception as e:
     return {"error": str(e)}
   return {"result": response}
@@ -355,7 +355,7 @@ async def save_code():
     global database
     request = get_request()
     data = await request.json()  # Get JSON data from request
-    logger.info(f"save_code: data is {data}")
+    write_log(f"save_code: data is {data}")
     filename = data.get('filename')
     code = data.get('code')
     code_id = generate_code_id()
@@ -367,22 +367,22 @@ async def save_code():
     directory = 'codes'
     filepath = os.path.join(directory, filename)
 
-    logger.info(f"save_code: filename is {filepath} and code was present")
+    write_log(f"save_code: filename is {filepath} and code was present")
     
     # Saving the code to database
     if database is not None:
       database.save_code(code,language,code_id,filename)
     else:
-      logger.error(f"Database not connected {database}")
+      write_log(f"Database not connected {database}")
     
-    logger.info(f"save_code: wrote code to file {filepath}")
+    write_log(f"save_code: wrote code to file {filepath}")
     download_link = f'{request.url_for("download",filename=filename)}'
-    logger.info(f"save_code: download link is {download_link}")
+    write_log(f"save_code: download link is {download_link}")
     output = ""
     if download_link:
       output = {"download_link": download_link}
   except Exception as e:
-    logger.error(f"save_code: {e}")
+    write_log(f"save_code: {e}")
   return output
 
 # Method to download the file.
@@ -392,7 +392,7 @@ async def download(filename: str):
     global database
     # check the file extension
     if filename.endswith(".png"):
-      logger.info(f"download: image filename is {filename}")
+      write_log(f"download: image filename is {filename}")
       # get the file-like object from gridfs by its filename
       file = database.graphs.find_one({"filename": filename})
       # check if the file exists
@@ -403,11 +403,11 @@ async def download(filename: str):
         response.headers["Content-Disposition"] = f"attachment; filename={filename}"
         return response
       else:
-        logger.error(f"download: failed to get file by filename {filename}")
+        write_log(f"download: failed to get file by filename {filename}")
         # handle the case when the file is not found
         return {"error": "File not found"}
     else:
-      logger.info(f"download: code filename is {filename}")
+      write_log(f"download: code filename is {filename}")
       # get the code from the database by its filename
       code = database.find_code(filename)
       # create a file-like object with the code
@@ -419,16 +419,16 @@ async def download(filename: str):
           # set the content-disposition header to indicate a file download
           response.headers["Content-Disposition"] = f"attachment; filename={filename}"
         else:
-          logger.error(f"download: failed to get code by filename {filename}")
+          write_log(f"download: failed to get code by filename {filename}")
           # handle the case when the file is not found
           return {"error": "File not found"}
       else:
-        logger.error(f"download: failed to get code by filename {filename}")
+        write_log(f"download: failed to get code by filename {filename}")
         # handle the case when the file is not found
         return {"error": "File not found"}
       return response
   except Exception as e:
-    logger.error(f"download: {e}")
+    write_log(f"download: {e}")
     return {"error": str(e)}
 
 
@@ -439,7 +439,7 @@ async def plugin_logo():
     filename = 'logo.png'
     logging.info(f"logo filename is {filename}")
   except Exception as e:
-    logger.error(f"plugin_logo: {e}")
+    write_log(f"plugin_logo: {e}")
   return FileResponse(filename)
 
 
@@ -451,7 +451,7 @@ async def plugin_manifest():
     with open("./.well-known/ai-plugin.json") as f:
       text = f.read()
   except Exception as e:
-    logger.error(f"plugin_manifest: {e}")
+    write_log(f"plugin_manifest: {e}")
   return Response(text, media_type="text/json")
 
 
@@ -463,21 +463,21 @@ async def openapi_spec():
     with open("openapi.yaml") as f:
       text = f.read()
   except Exception as e:
-    logger.error(f"openapi_spec: {e}")
+    write_log(f"openapi_spec: {e}")
   return Response(text, media_type="text/yaml")
 
 
 def get_credits_used():
   try:
-    logger.info("get_credits_used: called")
+    write_log("get_credits_used: called")
     response = get_jdoodle_credit_spent()
     credit_spent = response.json()
     credits_used = 0
-    logger.info(f"get_credits_used response : {credit_spent}")
+    write_log(f"get_credits_used response : {credit_spent}")
 
     if credit_spent:
       credits_used = credit_spent['used']
-      logger.info(f"get_credits_used Credits used: {credits_used}")
+      write_log(f"get_credits_used Credits used: {credits_used}")
 
     return credits_used
   except Exception as e:
