@@ -554,12 +554,12 @@ def setup_db():
 
 # Run the app.
 # Will only work with python main.py
-if __name__ == "__main__":
-  try:
-    write_log("Starting CodeRunner")
-    setup_db()
-    uvicorn.run(app)
-    write_log("CodeRunner started")
-  except Exception as e:
-    write_log(str(e))
+#if __name__ == "__main__":
+try:
+  write_log("Starting CodeRunner")
+  setup_db()
+  uvicorn.run(app)
+  write_log("CodeRunner started")
+except Exception as e:
+  write_log(str(e))
 
