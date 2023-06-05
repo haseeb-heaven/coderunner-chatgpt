@@ -39,6 +39,8 @@ compiler_url = "https://api.jdoodle.com/v1/execute"
 
 # setting the database.
 global database
+database = None
+
 try:
   # setting the database
   database = MongoDB()
