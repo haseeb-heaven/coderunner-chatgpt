@@ -330,6 +330,11 @@ async def run_code():
 async def save_code():
   try:
     global database
+    
+    # check if database is connected
+    if database is None:
+      database = setup_database()
+    
     request = get_request()
     data = await request.json()  # Get JSON data from request
     write_log(f"save_code: data is {data}")
@@ -351,7 +356,7 @@ async def save_code():
       database.save_code(code,language,code_id,filename)
     else:
       write_log(f"Database not connected {database}")
-      return {"error": "Database not connected"}, 400
+      return {"error": "Database not connected"}
     
     write_log(f"save_code: wrote code to file {filepath}")
     download_link = f'{request.url_for("download",filename=filename)}'
@@ -518,13 +523,11 @@ def make_dirs():
   if not os.path.exists('codes'):
     os.makedirs('codes')
 
-def setup_db():
+def setup_database():
   try:
-    if database is None:
       database = MongoDB()
       write_log(f"Database connected successfully {database}")
-    else:
-      write_log("Database already connected")
+      return database
   except Exception as e:
     write_log(str(e))
 
@@ -534,7 +537,7 @@ def setup_db():
 if __name__ == "__main__":
   try:
     write_log("Starting CodeRunner")
-    setup_db()
+    database = setup_database()
     uvicorn.run(app)
     write_log("CodeRunner started")
   except Exception as e:
