@@ -2,8 +2,8 @@
   "schema_version": "v1",
   "name_for_human": "Code Runner",
   "name_for_model": "code_runner",
-  "description_for_human": "Allows you to run and save the code.\\nPython:With Charts & Graphs.\\nSupports upto 70+ languages.",
-  "description_for_model": "Always use language codes in lowercase letters, such as 'python'.\\nIf not clear the use help endpoint always to display\\nFor saving code use save_code endpoint and for saving files use upload endpoint and for download use download endpoint.\\n",
+  "description_for_human": "Allows you to run and save the code With Charts & Graphs and Supports upto 70+ languages.",
+  "description_for_model": "Always use language codes in lowercase letters, such as 'python'.If not clear the use help endpoint always to display. For saving code use 'save_code' endpoint and for saving other files than code use 'upload' endpoint and for download use 'download' endpoint.",
   "auth": {
       "authorization_content_type": "application/json",
       "authorization_url": "https://auth.pluginlab.ai/oauth/token",
