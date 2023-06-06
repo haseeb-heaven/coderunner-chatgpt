@@ -12,7 +12,7 @@ from datetime import datetime
 from io import StringIO
 import io
 import traceback
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, Request, Response, UploadFile,File
 from fastapi.responses import FileResponse,StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 import gridfs
@@ -31,8 +31,8 @@ from lib.python_runner import execute_code
 from lib.mongo_db import MongoDB
 
 # defining the url's
-plugin_url = "code-runner-plugin.vercel.app"
-chatgpt_url = "chat.openai.com"
+plugin_url = "https://code-runner-plugin.vercel.app"
+chatgpt_url = "https://chat.openai.com"
 credit_spent_url = "https://api.jdoodle.com/v1/credit-spent"
 compiler_url = "https://api.jdoodle.com/v1/execute"
 
@@ -369,6 +369,47 @@ async def save_code():
   except Exception as e:
     write_log(f"save_code: {e}")
   return output
+
+# Create a route to save the file either document or image into database and return its url.
+# Create a route to save the file with filename and its data into database and return its url.
+@app.post('/upload')
+async def upload():
+  try:
+    global database
+    # get the request data
+    request = get_request()
+    data = await request.json()
+    write_log(f"upload: data is {data}")
+    # get the filename and data from the request
+    filename = data.get('filename')
+    file_data = data.get('data')
+    # check the file extension using os.path.splitext
+    import os
+    file_extension = os.path.splitext(filename)[1].lower()
+    write_log(f"upload: file extension is {file_extension}")
+    # save the file in the database according to the extension
+    if file_extension in ['.png', '.jpg', '.jpeg', '.gif']:
+      write_log(f"upload: image filename is {filename}")
+      # convert the data to bytes
+      contents = bytes(file_data, 'utf-8')
+      # save the file in the database
+      database.graphs.put(contents, filename=filename)
+      write_log(f"upload: saved image to database")
+      # return the download link
+      return {"download_link": f"{plugin_url}/download/{filename}"}
+    else:
+      write_log(f"upload: code filename is {filename}")
+      # convert the data to bytes
+      contents = bytes(file_data, 'utf-8')
+      # save the file in the database
+      database.codes.put(contents, filename=filename)
+      write_log(f"upload: saved code to database")
+      # return the download link
+      return {"download_link": f"{plugin_url}/download/{filename}"}
+  except Exception as e:
+    write_log(f"upload: {e}")
+    return {"error": str(e)}
+
 
 # Method to download the file.
 @app.get('/download/{filename}')

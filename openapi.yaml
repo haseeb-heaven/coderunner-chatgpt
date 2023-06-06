@@ -76,35 +76,82 @@ paths:
             application/json:
               schema:
                 type: object
+                
+  /upload:
+    post:
+      summary: Upload file with filename and data
+      operationId: uploadFile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FileData'
+      responses:
+        '200':
+          description: File uploaded and saved in database
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  download_link:
+                    type: string
+
 components:
+  # Add the FileData schema
   schemas:
+
+    FileData:
+
+      type: object
+      required:
+        - filename
+        - data
+
+      properties:
+        filename:
+          type: string
+          example: "test.csv"
+
+        data:
+          type: string
+          example: "this is some data"
+
     Code:
       type: object
       required:
         - script
         - language
+
       properties:
         script:
           type: string
           example: "print('Hello, World!')"
+
         language:
           type: string
           example: "python3"
+
         input:
           type: string
           example: "50"
+
         compileOnly:
           type: boolean
           example: false
+
     CodeFile:
       type: object
       required:
         - filename
         - code
+
       properties:
         filename:
           type: string
           example: "hello_world.cpp"
+
         code:
           type: string
           example: "print('Hello, World!')"
