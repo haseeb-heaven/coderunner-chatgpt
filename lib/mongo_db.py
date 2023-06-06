@@ -18,13 +18,17 @@ class MongoDB:
     
     def __init__(self):
         #Creating a logger
-        self._create_logger()
+        #self._create_logger()
         
         # Loading environment variables
+        self.write_log("MongoDB loading environment variables")
         self._load_env()
+        self.write_log("MongoDB loaded environment variables")
         
         #Creating a private method to connect to the database
         self._connect()
+        self.write_log("MongoDB connected to the database")
+        
         #Creating gridfs instances for graphs and codes collections
         self.graphs = GridFS(self.db, "graphs")
         self.codes = GridFS(self.db, "codes")

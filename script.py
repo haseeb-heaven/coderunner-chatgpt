@@ -330,10 +330,12 @@ async def run_code():
 async def save_code():
   try:
     global database
-    
+    write_log(f"save_code: database is {database}")
     # check if database is connected
     if database is None:
+      write_log(f"save_code: database is not connected")
       database = setup_database()
+      write_log(f"save_code: database is {database}")
     
     request = get_request()
     data = await request.json()  # Get JSON data from request
