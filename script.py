@@ -13,7 +13,7 @@ from io import StringIO
 import io
 import traceback
 from fastapi import FastAPI, Request, Response, UploadFile,File
-from fastapi.responses import FileResponse,StreamingResponse
+from fastapi.responses import FileResponse,StreamingResponse,RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 import gridfs
 import requests
@@ -477,7 +477,7 @@ async def download(filename: str):
 async def plugin_logo():
   try:
     filename = 'logo.png'
-    logging.info(f"logo filename is {filename}")
+    write_log(f"logo filename is {filename}")
   except Exception as e:
     write_log(f"plugin_logo: {e}")
   return FileResponse(filename)
@@ -537,44 +537,46 @@ def show_credits_spent():
 @app.get('/')
 async def help():
   write_log("help: Displayed for Plugin Guide")
-  json_data = {
-    "title":
-    "Code Runner Guide",
-    "features": [{
-      "name": "Run Code",
-      "description": "Runs the code in the current editor."
-    }, {
-      "name":
-      "Save Code",
-      "description":
-      "Saves the code in the current editor to a file."
-    }, {
-      "name":
-      "Download Code",
-      "description":
-      "Downloads the code in the current editor to a file."
-    }],
-    "prompts": [{
-      "name":
-      "Write me C++ program for factorial of number and Run the program.",
-      "description":
-      "Writes a C++ program for factorial of number and runs the program."
-    }, {
-      "name": "Given the program [YOUR_CODE] and only compile the program.",
-      "description": "Compiles the program [YOUR_CODE]."
-    }, {
-      "name":
-      "Save the program [YOUR_CODE] with filename [YOUR_FILENAME].",
-      "description":
-      "Saves the program [YOUR_CODE] with filename [YOUR_FILENAME]."
-    }, {
-      "name":
-      "Download the code  filename [YOUR_FILENAME].",
-      "description":
-      "Downloads the code with filename [YOUR_FILENAME]."
-    }]
-  }
-  return json_data
+  # how to redirect to /docs
+  return RedirectResponse(url='/docs', status_code=302)
+
+
+@app.get("/oauth")
+async def oauth(request: Request):
+    query_string = request.query_params
+    kvps = {}
+    for k, v in query_string.items():
+        v = v.replace("%2F", "/").replace("%3A", ":")
+        kvps[k] = v
+    print("OAuth key value pairs from the ChatGPT Request: ", kvps)
+    url = kvps["redirect_uri"] + f"?code={OPENAI_CODE}"
+    print("URL: ", url)
+    return Response(
+        f'<a href="{url}">Click to authorize</a>'
+    )
+
+# Sample names
+OPENAI_CLIENT_ID = "id"
+OPENAI_CLIENT_SECRET = "secret"
+OPENAI_CODE = "abc123"
+OPENAI_TOKEN = "def456"
+
+@app.post("/auth/oauth_exchange")
+async def oauth_exchange(request: Request):
+    data = await request.json()
+    print(f"oauth_exchange {data=}")
+
+    if data["client_id"] != OPENAI_CLIENT_ID:
+        raise RuntimeError("bad client ID")
+    if data["client_secret"] != OPENAI_CLIENT_SECRET:
+        raise RuntimeError("bad client secret")
+    if data["code"] != OPENAI_CODE:
+        raise RuntimeError("bad code")
+
+    return {
+        "access_token": OPENAI_TOKEN,
+        "token_type": "bearer"
+    }
 
 def make_dirs():
   if not os.path.exists('codes'):

@@ -52,16 +52,6 @@ class MongoDB:
         self.DATA_API_KEY = os.getenv("DATA_API_KEY")
         self.DATA_API_URL = os.getenv("DATA_API_URL")
         self.MONGODB_URI = os.getenv("MONGODB_URI")
-    
-    def _create_logger(self):
-        logger_file = __file__.replace(".py", ".log")
-        logger = logging.getLogger(logger_file)
-        logger.setLevel(logging.INFO)
-        formatter = logging.Formatter('%(asctime)s:%(levelname)s:%(message)s')
-        file_handler = logging.FileHandler(logger_file)
-        file_handler.setFormatter(formatter)
-        logger.addHandler(file_handler)
-        self.logger = logger
 
     
     def _generate_file_name():
@@ -311,7 +301,9 @@ class MongoDB:
         self.delete_all_codes()
         self.delete_all_images()
         self._delete_all_documents("graphs.files")
-        self._delete_all_documents("graphs.chunks")
+        self._delete_all_documents("graphs.chunks")      
+        self._delete_all_documents("docs.chunks")      
+        self._delete_all_documents("docs.files")
         self.write_log("Resetting database to initial state")
 
 
