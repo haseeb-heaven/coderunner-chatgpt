@@ -540,44 +540,6 @@ async def help():
   # how to redirect to /docs
   return RedirectResponse(url='/docs', status_code=302)
 
-
-@app.get("/oauth")
-async def oauth(request: Request):
-    query_string = request.query_params
-    kvps = {}
-    for k, v in query_string.items():
-        v = v.replace("%2F", "/").replace("%3A", ":")
-        kvps[k] = v
-    print("OAuth key value pairs from the ChatGPT Request: ", kvps)
-    url = kvps["redirect_uri"] + f"?code={OPENAI_CODE}"
-    print("URL: ", url)
-    return Response(
-        f'<a href="{url}">Click to authorize</a>'
-    )
-
-# Sample names
-OPENAI_CLIENT_ID = "id"
-OPENAI_CLIENT_SECRET = "secret"
-OPENAI_CODE = "abc123"
-OPENAI_TOKEN = "def456"
-
-@app.post("/auth/oauth_exchange")
-async def oauth_exchange(request: Request):
-    data = await request.json()
-    print(f"oauth_exchange {data=}")
-
-    if data["client_id"] != OPENAI_CLIENT_ID:
-        raise RuntimeError("bad client ID")
-    if data["client_secret"] != OPENAI_CLIENT_SECRET:
-        raise RuntimeError("bad client secret")
-    if data["code"] != OPENAI_CODE:
-        raise RuntimeError("bad code")
-
-    return {
-        "access_token": OPENAI_TOKEN,
-        "token_type": "bearer"
-    }
-
 def make_dirs():
   if not os.path.exists('codes'):
     os.makedirs('codes')
