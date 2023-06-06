@@ -1,13 +1,16 @@
 # Code Runner Plugin
 ![cover_logo](https://github.com/haseeb-heaven/CodeRunner-Plugin/blob/master/resources/logo.png?raw=true "")</br>
-[![Plugin](https://img.shields.io/badge/Code%20Runner-Plugin-blue)](https://coderunner-plugin.haseebmir.repl.co)
-[![Plugin - Manifest](https://img.shields.io/badge/Code%20Runner-Manifest-blue)](https://coderunner-plugin.haseebmir.repl.co/.well-known/ai-plugin.json)
+[![Plugin](https://img.shields.io/badge/Code%20Runner-Replit-blue)](https://coderunner-plugin.haseebmir.repl.co)
+[![Plugin](https://img.shields.io/badge/Code%20Runner-Hosted-blue)](https://code-runner-plugin.vercel.app/)
+[![Plugin - Manifest](https://img.shields.io/badge/Code%20Runner-Manifest-blue)](https://code-runner-plugin.vercel.app/.well-known/ai-plugin.json)
 [![Plugin](https://img.shields.io/badge/Code%20Runner-Hosted-blue)](https://replit.com/@HaseebMir/CodeRunner-Plugin)</br>
 - **Support this Project** <a href="https://www.buymeacoffee.com/haseebheaven"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=haseebheaven&button_colour=40DCA5&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00" /></a>
 ## Introduction
 Check out my first awesome plugin for **ChatGPT** that lets you Run code in 70+ languages! 🙌👩‍💻👨‍💻 </br>
 This code will run this Plugin on your local machine with localhost:8000 as the URL. </br>
 If you want to use Hosted one then check The repo is hosted on [ReplIt](https://replit.com/@HaseebMir/CodeRunner-Plugin)
+If you want to access live server use `server` branch use `git checkout server` to switch to server branch. </br>
+The hosted plugin is on **Vercel** and you can access it [here](https://code-runner-plugin.vercel.app/). </br>
 
 ## Information
 💻 **Run And Save Code** in over 70 programming languages with ease! **Chat-GPT Code Runner** offers a *versatile* and *flexible* coding experience for developers of all levels.</br>
@@ -80,6 +83,17 @@ To use Code Runner Plugin, follow these steps:
   - Download the code filename [YOUR_FILENAME]: This prompt will download the code with filename [YOUR_FILENAME]. Please replace [YOUR_FILENAME] with your specific filename when using this prompt.
 ![download_code](https://github.com/haseeb-heaven/CodeRunner-Plugin/blob/master/resources/coderunner_output_download.png?raw=true "")</br>
 
+## Showing Graphs as output.
+- Now you can ask ChatGPT to output the graphs for visuals and get output like these.
+- Input : 
+### Using Python run these commands
+**1.Generate Students data of 5 persons with Name,Id,School Name.** </br>
+**2.Save this data to file called 'students_data.csv'**</br>
+**3.Show the bar Graph for this.**</br>
+</br>
+- Output :
+![save_code](https://github.com/haseeb-heaven/CodeRunner-Plugin/blob/master/resources/coderunner_output_bar_graph.png?raw=true "")</br>
+![save_code](https://github.com/haseeb-heaven/CodeRunner-Plugin/blob/master/resources/coderunner_output_pie_graph.png?raw=true "")</br>
 ## Features
 
 Some of the features of Code Runner Plugin are:
@@ -89,6 +103,8 @@ Some of the features of Code Runner Plugin are:
 - Ability to run and save code locally with a single click.
 - Ability to customize themes and output types for your coding environment.
 - Fast and reliable execution of code using the JDoodle Compiler API.
+- Ability to show visual graphs as output.
+- Abiity to save documents uploading support all kind of files.
 
 ## Localhost & Server Files.
 The localhost and server files are located in the following directories:
