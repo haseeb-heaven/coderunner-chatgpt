@@ -32,6 +32,8 @@ class MongoDB:
         #Creating gridfs instances for graphs and codes collections
         self.graphs = GridFS(self.db, "graphs")
         self.codes = GridFS(self.db, "codes")
+        self.docs = GridFS(self.db, "docs")
+        self.img = GridFS(self.db, "img")
         
     def _connect(self):
         #Connecting to the database using the URI

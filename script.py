@@ -380,29 +380,32 @@ async def upload():
     request = get_request()
     data = await request.json()
     write_log(f"upload: data is {data}")
+    
     # get the filename and data from the request
     filename = data.get('filename')
     file_data = data.get('data')
+    
     # check the file extension using os.path.splitext
-    import os
     file_extension = os.path.splitext(filename)[1].lower()
     write_log(f"upload: file extension is {file_extension}")
+    
     # save the file in the database according to the extension
     if file_extension in ['.png', '.jpg', '.jpeg', '.gif']:
       write_log(f"upload: image filename is {filename}")
       # convert the data to bytes
       contents = bytes(file_data, 'utf-8')
       # save the file in the database
-      database.graphs.put(contents, filename=filename)
+      database.img.put(contents, filename=filename)
       write_log(f"upload: saved image to database")
       # return the download link
       return {"download_link": f"{plugin_url}/download/{filename}"}
-    else:
+    
+    elif file_extension in ['.pdf', '.doc', '.docx','.csv','.xls','.xlsx','.txt','.json']:
       write_log(f"upload: code filename is {filename}")
       # convert the data to bytes
       contents = bytes(file_data, 'utf-8')
       # save the file in the database
-      database.codes.put(contents, filename=filename)
+      database.docs.put(contents, filename=filename)
       write_log(f"upload: saved code to database")
       # return the download link
       return {"download_link": f"{plugin_url}/download/{filename}"}
@@ -417,7 +420,7 @@ async def download(filename: str):
   try:
     global database
     # check the file extension
-    if filename.endswith(".png"):
+    if filename.endswith(('.png', '.jpg', '.jpeg', '.gif')):
       write_log(f"download: image filename is {filename}")
       # get the file-like object from gridfs by its filename
       file = database.graphs.find_one({"filename": filename})
@@ -432,6 +435,17 @@ async def download(filename: str):
         write_log(f"download: failed to get file by filename {filename}")
         # handle the case when the file is not found
         return {"error": "File not found"}
+    elif filename.endswith(('.pdf', '.doc', '.docx','.csv','.xls','.xlsx','.txt','.json')):
+      write_log(f"download: document filename is {filename}")
+      file = database.docs.find_one({"filename": filename})
+      # check if the file exists
+      if file:
+        write_log(f"download: document filename is {filename}")
+        # create a streaming response with the file-like object
+        response = StreamingResponse(file, media_type="text/plain")
+        # set the content-disposition header to indicate a file download
+        response.headers["Content-Disposition"] = f"attachment; filename={filename}"
+        return response
     else:
       write_log(f"download: code filename is {filename}")
       # get the code from the database by its filename
@@ -576,7 +590,7 @@ def setup_database():
 
 
 # Run the app.
-# Will only work with python main.py
+# Will only work with python script.py
 if __name__ == "__main__":
   try:
     write_log("Starting CodeRunner")
