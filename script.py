@@ -517,7 +517,7 @@ async def openapi_spec():
     text = ""
     with open("openapi.json") as f:
       text = f.read()
-      write_log(f"openapi_spec: {text}")
+      write_log("openapi_spec read success")
   except Exception as e:
     write_log(f"openapi_spec: {e}")
   return Response(text, media_type="text/json")
@@ -574,6 +574,7 @@ def privacy_policy():
     # Read the file content as a string
     with open(file_name, "r") as f:
         html_content = f.read()
+        write_log("privacy_policy Content read success")
     # Return the HTML content as a response
     return HTMLResponse(content=html_content)
 
