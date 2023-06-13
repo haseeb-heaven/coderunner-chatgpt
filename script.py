@@ -326,8 +326,8 @@ async def run_code():
 
     write_log(f"run_code: {response}")
   except Exception as e:
-    return {"error": str(e)}
-  return {"result": response}
+    return JSONResponse({"error": str(e)}, status_code=500)
+  return JSONResponse(response)
 
 
 # Method to save the code.
@@ -416,60 +416,74 @@ async def upload():
       return {"download_link": f"{plugin_url}/download/{filename}"}
   except Exception as e:
     write_log(f"upload: {e}")
-    return {"error": str(e)}
+    return JSONResponse(status_code=500, content={"error": str(e)})
 
 
 # Method to download the file.
-from fastapi.responses import JSONResponse
-
-@app.get('/download/{filename}')
 @app.get('/download/{filename}')
 async def download(filename: str):
-    try:
-        global database
-        # check the file extension
-        if filename.endswith(('.png', '.jpg', '.jpeg', '.gif')):
-            write_log(f"download: image filename is {filename}")
-            # get the file-like object from gridfs by its filename
-            file = database.graphs.find_one({"filename": filename})
-            # check if the file exists
-            if file:
-                response_url = f"{plugin_url}/download/{filename}"
-                return {"response": response_url}
-            else:
-                write_log(f"download: failed to get file by filename {filename}")
-                # handle the case when the file is not found
-                return {"error": "File not found"}
-        elif filename.endswith(('.pdf', '.doc', '.docx','.csv','.xls','.xlsx','.txt','.json')):
-            write_log(f"download: document filename is {filename}")
-            file = database.docs.find_one({"filename": filename})
-            # check if the file exists
-            if file:
-                write_log(f"download: document filename is {filename}")
-                response_url = f"{plugin_url}/download/{filename}"
-                return {"response": response_url}
+  try:
+    global database
+    # check the file extension
+    if filename.endswith(('.png', '.jpg', '.jpeg', '.gif')):
+      
+      write_log(f"download: image filename is {filename}")
+      # get the file-like object from gridfs by its filename
+      file = database.graphs.find_one({"filename": filename})
+      
+      # check if the file exists
+      if file:
+        # create a streaming response with the file-like object
+        response = StreamingResponse(file, media_type="image/png")
+        # set the content-disposition header to indicate a file download
+        response.headers["Content-Disposition"] = f"attachment; filename={filename}"
+        return response
+      else:
+        write_log(f"download: failed to get file by filename {filename}")
+        # handle the case when the file is not found
+        return {"error": "File not found"}
+      
+    elif filename.endswith(('.pdf', '.doc', '.docx','.csv','.xls','.xlsx','.txt','.json')):
+      write_log(f"download: document filename is {filename}")
+      file = database.docs.find_one({"filename": filename})
+      
+      # check if the file exists
+      if file:
+        write_log(f"download: document filename is {filename}")
+        # create a streaming response with the file-like object
+        response = StreamingResponse(file, media_type="text/plain")
+        # set the content-disposition header to indicate a file download
+        response.headers["Content-Disposition"] = f"attachment; filename={filename}"
+        return response
+    
+    else:
+      write_log(f"download: code filename is {filename}")
+      # get the code from the database by its filename
+      code = database.find_code(filename)
+      
+      # create a file-like object with the code
+      if code:
+        code_file = StringIO(code)
+        
+        if code_file:
+          # create a streaming response with the file-like object
+          response = StreamingResponse(code_file, media_type="text/plain")
+          # set the content-disposition header to indicate a file download
+          response.headers["Content-Disposition"] = f"attachment; filename={filename}"
+          return response
         else:
-            write_log(f"download: code filename is {filename}")
-            # get the code from the database by its filename
-            code = database.find_code(filename)
-            # create a file-like object with the code
-            if code:
-                code_file = StringIO(code)
-                if code_file:
-                    response_url = f"{plugin_url}/download/{filename}"
-                    return {"response": response_url}
-                else:
-                    write_log(f"download: failed to get code by filename {filename}")
-                    # handle the case when the file is not found
-                    return {"error": "File not found"}
-            else:
-                write_log(f"download: failed to get code by filename {filename}")
-                # handle the case when the file is not found
-                return {"error": "File not found"}
-    except Exception as e:
-        write_log(f"download: {e}")
-        return {"error": str(e)}
-
+          write_log(f"download: failed to get code by filename {filename}")
+          # handle the case when the file is not found
+          return {"error": "File not found"}
+      
+      else:
+        write_log(f"download: failed to get code by filename {filename}")
+        # handle the case when the file is not found
+        return {"error": "File not found"}
+      return response
+  except Exception as e:
+    write_log(f"download: {e}")
+    return JSONResponse(status_code=500, content={"error": str(e)})
 
 
 # Plugin logo.
@@ -541,7 +555,7 @@ def show_credits_spent():
     credits_used = get_credits_used()
     return {"credits:": credits_used}
   except Exception as e:
-    return {"error": str(e)}
+    return JSONResponse(status_code=500, content={"error": str(e)})
 
 
 @app.get('/help')
