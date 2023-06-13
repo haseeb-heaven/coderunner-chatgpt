@@ -12,13 +12,13 @@ from datetime import datetime
 from io import StringIO
 import io
 import traceback
-from fastapi import FastAPI, Request, Response, UploadFile,File
+from fastapi import FastAPI, Request, Response
 from fastapi.responses import FileResponse,StreamingResponse,RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.docs import get_swagger_ui_html
 import gridfs
 import requests
 import json
-import logging
 import uvicorn
 from fastapi.staticfiles import StaticFiles
 from starlette.requests import Request
@@ -53,8 +53,7 @@ ORIGINS = [
  plugin_url ,chatgpt_url
 ]
 
-## Main application for FastAPI Web Server
-app = FastAPI()
+app = FastAPI(openapi_url=None,docs_url="/docs")    
 app.add_middleware(
   CORSMiddleware,
   allow_origins=ORIGINS,
@@ -494,29 +493,29 @@ async def plugin_manifest():
     write_log(f"plugin_manifest: {e}")
   return Response(text, media_type="text/json")
 
-
-# Plugin OpenAPI spec.
-@app.get("/openapi.yaml")
-async def openapi_spec():
-  try:
-    text = ""
-    with open("openapi.yaml") as f:
-      text = f.read()
-  except Exception as e:
-    write_log(f"openapi_spec: {e}")
-  return Response(text, media_type="text/yaml")
-
 # Plugin OpenAI spec in json.
 @app.get("/openapi.json")
 async def openapi_spec():
   try:
+    write_log("openapi_spec called")
     text = ""
     with open("openapi.json") as f:
       text = f.read()
+      write_log(f"openapi_spec: {text}")
   except Exception as e:
     write_log(f"openapi_spec: {e}")
   return Response(text, media_type="text/json")
 
+# Docs for the plugin.
+@app.get("/docs", include_in_schema=False)
+async def plugin_docs():
+  try:
+    return get_swagger_ui_html(
+        openapi_url="/openapi.json",
+        title="Code Runner Docs",
+    )
+  except Exception as e:
+    write_log(f"plugin_docs: {e}")
 
 def get_credits_used():
   try:
