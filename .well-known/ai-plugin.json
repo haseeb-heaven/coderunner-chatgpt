@@ -2,7 +2,7 @@
   "schema_version": "v1",
   "name_for_human": "Code Runner",
   "name_for_model": "code_runner",
-  "description_for_human": "Compile and save your code while creating visualizations (charts and graphs) in more than 70 coding languages.",
+  "description_for_human": "Compile and save your code while creating visualizations (charts and graphs) in more than 70 programming languages.",
   "description_for_model": "Always use language codes in lowercase letters, such as 'python'.For saving code use 'save_code' endpoint and to save documents and files always use 'upload' endpoint and for download use 'download' endpoint.",
   "auth": {
       "authorization_content_type": "application/json",

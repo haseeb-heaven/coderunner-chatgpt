@@ -502,12 +502,12 @@ async def plugin_logo():
 @app.get("/.well-known/ai-plugin.json")
 async def plugin_manifest():
   try:
-    text = ""
+    manifest = ""
     with open("./.well-known/ai-plugin.json") as f:
-      text = f.read()
+      manifest = f.read()
   except Exception as e:
     write_log(f"plugin_manifest: {e}")
-  return Response(text, media_type="text/json")
+  return Response(manifest, media_type="text/json")
 
 # Plugin OpenAI spec in json.
 @app.get("/openapi.json")
