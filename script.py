@@ -504,6 +504,7 @@ async def plugin_manifest():
   try:
     manifest = ""
     with open("./.well-known/ai-plugin.json") as f:
+      write_log("plugin_manifest read success")
       manifest = f.read()
   except Exception as e:
     write_log(f"plugin_manifest: {e}")
@@ -588,14 +589,15 @@ def setup_database():
       write_log(f"Database connected successfully {database}")
       return database
   except Exception as e:
-    write_log(str(e))
+    write_log(f"Error in setup_database: {e}")
+    return None
 
 
 # Run the app.
 # Will only work with python script.py
 if __name__ == "__main__":
   try:
-    write_log("Starting CodeRunner")
+    write_log("Initializing CodeRunner")
     database = setup_database()
     uvicorn.run(app)
     write_log("CodeRunner started")
