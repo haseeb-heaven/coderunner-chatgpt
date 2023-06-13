@@ -1,5 +1,5 @@
 import contextlib
-import datetime
+from datetime import datetime
 import io
 import re
 import tokenize
