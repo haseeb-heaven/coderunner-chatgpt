@@ -1,3 +1,11 @@
+"""
+Brief : This is file to check safe code in sandbox environment to execute all Python code with Graphs and Charts.
+Language: Python.
+Date: 14/06/2023.
+Author : HeavenHM
+"""
+
+# Importing the required libraries.
 import contextlib
 from datetime import datetime
 import io
@@ -235,15 +243,6 @@ harmful_commands_cpp = [
   "setgid",  # Can be used to set the current process's group id
   "chroot",  # Can be used to change the root directory of the current process
 ]
-
-# define method to get the list of harmful commands for python
-def get_harmful_commands_python():
-  return harmful_commands_python
-
-
-# define method to get the list of harmful commands for cpp
-def get_harmful_commands_cpp():
-  return harmful_commands_cpp
 
 # Method to write logs to a file.
 def write_log(log_msg:str):

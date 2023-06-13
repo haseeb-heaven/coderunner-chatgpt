@@ -3,7 +3,7 @@ Description: This is ChatGPT Plugin for CodeRunner. Which can run and save code 
 This is a FastAPI Web Server which is used to run the code and return the output.
 Server API : FastAPI.
 Language: Python.
-Date: 16/05/2023.
+Date: 14/06/2023.
 Author : HeavenHM
 """
 
@@ -53,6 +53,7 @@ ORIGINS = [
  plugin_url ,chatgpt_url
 ]
 
+# Defining the app.
 app = FastAPI(openapi_url=None,docs_url="/docs")    
 app.add_middleware(
   CORSMiddleware,
@@ -126,7 +127,7 @@ def get_jdoodle_client_2():
                                         'b871442dfcc40e28a40f66b3')
   return client_id, client_secret
 
-
+# Method to get the JDoodle client.
 def get_jdoodle_client():
   try:
     index = 1
@@ -595,7 +596,7 @@ if __name__ == "__main__":
   try:
     write_log("Starting CodeRunner")
     database = setup_database()
-    uvicorn.run("script:app",reload=True)
+    uvicorn.run(app)
     write_log("CodeRunner started")
   except Exception as e:
     write_log(str(e))
