@@ -231,6 +231,7 @@ async def run_code():
       try:
         write_log("Trying to run Python code locally with all Libs installed.")
         graph_file = ""
+        contains_graph = False
         
         # Execute the code in the script.
         safe_code_dict = is_code_safe(script)
@@ -243,23 +244,28 @@ async def run_code():
         if any(library in script for library in ['import matplotlib', 'import seaborn', 'import plotly']):
           write_log("Graphic libraries found in script. Trying to run Python code locally with all Libs installed.")
           
-          # generate random name for graph file.
-          graph_file = f"graph_{random.randrange(1, 100000)}.png"
+          # check if script contains "show()" method.
+          if any(method in script for method in ['show()', 'plt.show()', 'pyplot.show()']):
+            contains_graph = True
+            # generate random name for graph file.
+            graph_file = f"graph_{random.randrange(1, 100000)}.png"
 
-          # replacing the line if it contains show() method
-          # Use a list comprehension to filter out lines that contain "show()"
-          script = "\n".join([line for line in script.splitlines() if "show()" not in line])
+            # replacing the line if it contains show() method
+            script = "\n".join([line for line in script.splitlines() if "show()" not in line])
           
           if safe_code:
             response = execute_code(script)
             write_log(f"run_code: executed script")
             
             # Save the plot as an image file in a buffer
-            write_log(f"run_code: saving plot")
-            response = save_plot(graph_file)
+            if contains_graph:
+              write_log(f"run_code: saving plot")
+              response = save_plot(graph_file)
 
-            if response.__len__() == 0:
+            if response.__len__() == 0 and contains_graph:
               response = {"success":f"{plugin_url}/download/{graph_file}"}
+            else:
+              response = {"result": response}
               
             # Return the response as JSON
             write_log(f"run_code: response is {response}")
@@ -420,23 +426,28 @@ async def download(filename: str):
     global database
     # check the file extension
     if filename.endswith(('.png', '.jpg', '.jpeg', '.gif')):
+      
       write_log(f"download: image filename is {filename}")
       # get the file-like object from gridfs by its filename
       file = database.graphs.find_one({"filename": filename})
+      
       # check if the file exists
       if file:
         # create a streaming response with the file-like object
         response = StreamingResponse(file, media_type="image/png")
         # set the content-disposition header to indicate a file download
         response.headers["Content-Disposition"] = f"attachment; filename={filename}"
-        return response
+        response_url = f"{plugin_url}/download/{filename}"
+        return response, response_url
       else:
         write_log(f"download: failed to get file by filename {filename}")
         # handle the case when the file is not found
         return {"error": "File not found"}
+      
     elif filename.endswith(('.pdf', '.doc', '.docx','.csv','.xls','.xlsx','.txt','.json')):
       write_log(f"download: document filename is {filename}")
       file = database.docs.find_one({"filename": filename})
+      
       # check if the file exists
       if file:
         write_log(f"download: document filename is {filename}")
@@ -444,28 +455,34 @@ async def download(filename: str):
         response = StreamingResponse(file, media_type="text/plain")
         # set the content-disposition header to indicate a file download
         response.headers["Content-Disposition"] = f"attachment; filename={filename}"
-        return response
+        response_url = f"{plugin_url}/download/{filename}"
+        return response, response_url
+    
     else:
       write_log(f"download: code filename is {filename}")
       # get the code from the database by its filename
       code = database.find_code(filename)
+      
       # create a file-like object with the code
       if code:
         code_file = StringIO(code)
+        
         if code_file:
           # create a streaming response with the file-like object
           response = StreamingResponse(code_file, media_type="text/plain")
           # set the content-disposition header to indicate a file download
           response.headers["Content-Disposition"] = f"attachment; filename={filename}"
+          response_url = f"{plugin_url}/download/{filename}"
         else:
           write_log(f"download: failed to get code by filename {filename}")
           # handle the case when the file is not found
           return {"error": "File not found"}
+      
       else:
         write_log(f"download: failed to get code by filename {filename}")
         # handle the case when the file is not found
         return {"error": "File not found"}
-      return response
+      return response, response_url
   except Exception as e:
     write_log(f"download: {e}")
     return {"error": str(e)}

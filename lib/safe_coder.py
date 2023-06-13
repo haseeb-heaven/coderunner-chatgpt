@@ -4,85 +4,6 @@ import io
 import re
 import tokenize
 
-
-harmful_prompts = [
-  'rename',  # Existing commands
-  'delete',
-  'remove',
-  'shutdown',
-  'reboot',
-  'format',
-  'halt',
-  'poweroff',
-  'remove file',
-  'remove folder',
-  'remove directory',
-  'delete file',
-  'delete folder',
-  'delete directory',
-  'rename file',
-  'rename folder',
-  'rename directory',
-  'move file',
-  'move folder',
-  'move directory',
-  'replace file',
-  'replace folder',
-  'replace directory',
-  'exit',  # Additional harmful prompts
-  'quit',
-  'vanish',
-  'null',
-  'void',
-  'wipe',
-  'erase',
-  'obliterate',
-  'discard',
-  'purge',
-  'exterminate',
-  'terminate',
-  'expunge',
-  'eliminate',
-  'kill file',
-  'kill folder',
-  'kill directory',
-  'destroy file',
-  'destroy folder',
-  'destroy directory',
-  'nullify file',
-  'nullify folder',
-  'nullify directory',
-  'void file',
-  'void folder',
-  'void directory',
-  'change file',
-  'change folder',
-  'change directory',
-  'shift file',
-  'shift folder',
-  'shift directory',
-   # Standalone commands
-  'remove', 
-  'delete',
-  'rename',
-  'move',
-  'replace',
-  'kill',
-  'destroy',
-  'nullify',
-  'void',
-  'change',
-  'shift',
-   # Blacklisted files
-  'mongo_db.py',  
-  'safe_coder.py',
-  'python_runner.py',
-  'app.py',
-  'python_runner',
-  'mongo_db.py',
-  'requirements.txt',
-]
-
 harmful_commands_python = [
     # Existing commands
   'cut',
@@ -148,15 +69,9 @@ harmful_commands_python = [
   'cat',
   'ncat',
   'rsync',
-  'delete',
-  'deleted',
   'remove',
   'shutdown',
   'reboot',
-  'append',
-  'appended',
-  'remove',
-  'removed',
   'rmdir',
   'rmtree',
   'shutil.rmtree',
@@ -208,7 +123,7 @@ harmful_commands_python = [
   'mongo_db.py',  
   'safe_coder.py',
   'python_runner.py',
-  'app.py',
+  'script.py',
   'python_runner',
   'mongo_db.py',
   'requirements.txt',
@@ -292,37 +207,6 @@ harmful_commands_python = [
 ]
 
 harmful_commands_cpp = [
-  "remove",  # Existing commands
-  "std::remove",
-  "remove_all",
-  "ilesystem::remove_all",
-  "filesystem::remove",
-  "rename",
-  "std::rename",
-  "filesystem::rename",
-  "std::system",
-  "abort",
-  "std::abort",
-  "exit",
-  "std::exit",
-  "move",
-  "std::move",
-  "filesystem::move",
-  "std::ofstream",
-  "std::quick_exit",
-  "ios::app",
-  "trunc",
-  "ios::trunc",
-  "std::ios::app",
-  "std::ios::trunc",
-  "std::filesystem::remove",
-  "std::_Exit",
-  "fp << NULL",
-  'fp << "" <<',
-  "file << NULL",
-  'file << "" <<',
-  "std::system_clock::now().time_since_epoch().count()",
-  "std::chrono::system_clock::now().time_since_epoch().count()",
   "std::system(\"rm -rf",
   "std::system(\"format",
   "std::system(\"curl",
@@ -352,12 +236,6 @@ harmful_commands_cpp = [
   "chroot",  # Can be used to change the root directory of the current process
 ]
 
-
-# define method to get the list of harmful prompts
-def get_harmful_prompts():
-  return harmful_prompts
-
-
 # define method to get the list of harmful commands for python
 def get_harmful_commands_python():
   return harmful_commands_python
@@ -367,10 +245,10 @@ def get_harmful_commands_python():
 def get_harmful_commands_cpp():
   return harmful_commands_cpp
 
+# Method to write logs to a file.
 def write_log(log_msg:str):
   try:
-    with open('CodeRunner.log', 'a') as f:
-      f.write(str(datetime.datetime.now()) + " " + log_msg + "\n")
+    print(str(datetime.now()) + " " + log_msg)
   except Exception as e:
     print(str(e))
 
