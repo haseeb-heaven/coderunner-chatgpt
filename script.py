@@ -423,6 +423,7 @@ async def upload():
 from fastapi.responses import JSONResponse
 
 @app.get('/download/{filename}')
+@app.get('/download/{filename}')
 async def download(filename: str):
     try:
         global database
@@ -433,12 +434,8 @@ async def download(filename: str):
             file = database.graphs.find_one({"filename": filename})
             # check if the file exists
             if file:
-                # create a streaming response with the file-like object
-                response = StreamingResponse(file, media_type="image/png")
-                # set the content-disposition header to indicate a file download
-                response.headers["Content-Disposition"] = f"attachment; filename={filename}"
                 response_url = f"{plugin_url}/download/{filename}"
-                return JSONResponse(content={"response": response, "response_url": response_url})
+                return {"response": response_url}
             else:
                 write_log(f"download: failed to get file by filename {filename}")
                 # handle the case when the file is not found
@@ -449,12 +446,8 @@ async def download(filename: str):
             # check if the file exists
             if file:
                 write_log(f"download: document filename is {filename}")
-                # create a streaming response with the file-like object
-                response = StreamingResponse(file, media_type="text/plain")
-                # set the content-disposition header to indicate a file download
-                response.headers["Content-Disposition"] = f"attachment; filename={filename}"
                 response_url = f"{plugin_url}/download/{filename}"
-                return JSONResponse(content={"response": response, "response_url": response_url})
+                return {"response": response_url}
         else:
             write_log(f"download: code filename is {filename}")
             # get the code from the database by its filename
@@ -463,12 +456,8 @@ async def download(filename: str):
             if code:
                 code_file = StringIO(code)
                 if code_file:
-                    # create a streaming response with the file-like object
-                    response = StreamingResponse(code_file, media_type="text/plain")
-                    # set the content-disposition header to indicate a file download
-                    response.headers["Content-Disposition"] = f"attachment; filename={filename}"
                     response_url = f"{plugin_url}/download/{filename}"
-                    return JSONResponse(content={"response": response, "response_url": response_url})
+                    return {"response": response_url}
                 else:
                     write_log(f"download: failed to get code by filename {filename}")
                     # handle the case when the file is not found
