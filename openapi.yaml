@@ -121,11 +121,11 @@ components:
     Code:
       type: object
       required:
-        - script
+        - code
         - language
 
       properties:
-        script:
+        code:
           type: string
           example: "print('Hello, World!')"
 

@@ -219,7 +219,7 @@ async def run_code():
     request = get_request()
     data = await request.json()
     write_log(f"run_code: data is {data}")
-    script = data.get('script')
+    script = data.get('code')
     language = data.get('language')
 
     # Convert the language to the JDoodle language code.
@@ -505,6 +505,17 @@ async def openapi_spec():
   except Exception as e:
     write_log(f"openapi_spec: {e}")
   return Response(text, media_type="text/yaml")
+
+# Plugin OpenAI spec in json.
+@app.get("/openapi.json")
+async def openapi_spec():
+  try:
+    text = ""
+    with open("openapi.json") as f:
+      text = f.read()
+  except Exception as e:
+    write_log(f"openapi_spec: {e}")
+  return Response(text, media_type="text/json")
 
 
 def get_credits_used():
