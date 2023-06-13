@@ -13,7 +13,7 @@ from io import StringIO
 import io
 import traceback
 from fastapi import FastAPI, Request, Response
-from fastapi.responses import FileResponse,StreamingResponse,RedirectResponse,JSONResponse
+from fastapi.responses import FileResponse,StreamingResponse,RedirectResponse,JSONResponse,HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import get_swagger_ui_html
 import gridfs
@@ -565,6 +565,17 @@ async def help():
   # how to redirect to /docs
   return RedirectResponse(url='/docs', status_code=302)
 
+# Define a single method that reads the HTML content from a file and returns it as a response
+@app.get("/privacy")
+def privacy_policy():
+    # Define the file name
+    file_name = "privacy/privacy.html"
+    # Read the file content as a string
+    with open(file_name, "r") as f:
+        html_content = f.read()
+    # Return the HTML content as a response
+    return HTMLResponse(content=html_content)
+
 def make_dirs():
   if not os.path.exists('codes'):
     os.makedirs('codes')
@@ -584,7 +595,7 @@ if __name__ == "__main__":
   try:
     write_log("Starting CodeRunner")
     database = setup_database()
-    uvicorn.run(app)
+    uvicorn.run("script:app",reload=True)
     write_log("CodeRunner started")
   except Exception as e:
     write_log(str(e))

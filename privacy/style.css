@@ -1,0 +1,29 @@
+/* Define the style for the body element */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #00d4ebc3;
+  margin: 20px;
+}
+
+/* Define the style for the h1 element */
+h1 {
+  color: #333333;
+  text-align: center;
+}
+
+/* Define the style for the p element */
+p {
+  color: #555555;
+  line-height: 1.5;
+}
+
+/* Define the style for the a element */
+a {
+  color: #0077cc;
+  text-decoration: none;
+}
+
+/* Define the style for the a element when hovered */
+a:hover {
+  text-decoration: underline;
+}
