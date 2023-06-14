@@ -12,6 +12,7 @@ from datetime import datetime
 from io import StringIO
 import io
 import traceback
+import aiofiles
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import FileResponse,StreamingResponse,RedirectResponse,JSONResponse,HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -490,12 +491,18 @@ async def download(filename: str):
 # Plugin logo.
 @app.get("/logo.png")
 async def plugin_logo():
-  try:
-    return FileResponse('logo.png', media_type="image/png")
-  except Exception as e:
-    write_log(f"plugin_logo: {e}")
-    return Response(status_code=500)
+    try:
+        async with aiofiles.open('logo.png', mode='rb') as f:
+            contents = await f.read()
+            return Response(content=contents, media_type='image/png')
+    except Exception as e:
+        write_log(f"plugin_logo: {e}")
+        return Response(status_code=500)
+    finally:
+        await f.close()
 
+
+    
 # Plugin manifest.
 @app.get("/.well-known/ai-plugin.json")
 async def plugin_manifest():
@@ -584,16 +591,12 @@ def setup_database():
   except Exception as e:
     write_log(str(e))
 
-def set_ulimit():
-  os.system('ulimit -n 65536')
-
 # Run the app.
 # Will only work with python script.py
 if __name__ == "__main__":
   try:
     write_log("CodeRunner starting")
     database = setup_database()
-    set_ulimit()
     uvicorn.run(app)
     write_log("CodeRunner started")
   except Exception as e:
