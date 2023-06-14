@@ -1,7 +1,6 @@
 #Importing modules
 import datetime
 import os
-import logging
 import random
 import string
 from datetime import datetime
