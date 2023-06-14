@@ -9,3 +9,5 @@ pandas
 requests
 pymongo
 python-dotenv
+scipy
+numpy
