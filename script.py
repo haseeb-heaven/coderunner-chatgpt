@@ -492,16 +492,14 @@ async def download(filename: str):
 @app.get("/logo.png")
 async def plugin_logo():
     try:
-        async with aiofiles.open('logo.png', mode='rb') as f:
-            contents = await f.read()
-            return Response(content=contents, media_type='image/png')
+        fp = open('logo.png', mode='rb')
+        contents = fp.read()
+        return Response(content=contents, media_type='image/png')
     except Exception as e:
         write_log(f"plugin_logo: {e}")
         return Response(status_code=500)
     finally:
-        await f.close()
-
-
+        fp.close()
     
 # Plugin manifest.
 @app.get("/.well-known/ai-plugin.json")
