@@ -64,7 +64,7 @@ app.add_middleware(
 )
 
 # Mount the .well-known directory.
-app.mount("/.well-known", StaticFiles(directory=".well-known"), name="static")
+#app.mount("/.well-known", StaticFiles(directory=".well-known"), name="static")
 
 # Context variable to store the request.
 # Credit - https://sl.bing.net/ib0YUGReKZg
@@ -493,35 +493,31 @@ async def plugin_logo():
   try:
     filename = 'logo.png'
     write_log(f"logo filename is {filename}")
+    with open(filename, 'rb') as f:
+      return StreamingResponse(f, media_type="image/png")
   except Exception as e:
     write_log(f"plugin_logo: {e}")
-  return FileResponse(filename)
-
+    return Response(status_code=500)
 
 # Plugin manifest.
 @app.get("/.well-known/ai-plugin.json")
 async def plugin_manifest():
   try:
-    manifest = ""
-    with open("./.well-known/ai-plugin.json") as f:
-      write_log("plugin_manifest read success")
-      manifest = f.read()
+    write_log("plugin_manifest called")
+    return FileResponse("./.well-known/ai-plugin.json", media_type="text/json")
   except Exception as e:
     write_log(f"plugin_manifest: {e}")
-  return Response(manifest, media_type="text/json")
+    return Response(status_code=500)
 
 # Plugin OpenAI spec in json.
 @app.get("/openapi.json")
 async def openapi_spec():
   try:
     write_log("openapi_spec called")
-    text = ""
-    with open("openapi.json") as f:
-      text = f.read()
-      write_log("openapi_spec read success")
+    return FileResponse("openapi.json", media_type="text/json")
   except Exception as e:
     write_log(f"openapi_spec: {e}")
-  return Response(text, media_type="text/json")
+    return Response(status_code=500)
 
 # Docs for the plugin.
 @app.get("/docs", include_in_schema=False)
@@ -589,15 +585,14 @@ def setup_database():
       write_log(f"Database connected successfully {database}")
       return database
   except Exception as e:
-    write_log(f"Error in setup_database: {e}")
-    return None
+    write_log(str(e))
 
 
 # Run the app.
 # Will only work with python script.py
 if __name__ == "__main__":
   try:
-    write_log("Initializing CodeRunner")
+    write_log("CodeRunner starting")
     database = setup_database()
     uvicorn.run(app)
     write_log("CodeRunner started")
