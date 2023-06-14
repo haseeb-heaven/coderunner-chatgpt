@@ -12,7 +12,6 @@ from datetime import datetime
 from io import StringIO
 import io
 import traceback
-import aiofiles
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import FileResponse,StreamingResponse,RedirectResponse,JSONResponse,HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -502,24 +501,32 @@ async def plugin_logo():
         fp.close()
     
 # Plugin manifest.
+# Plugin manifest.
 @app.get("/.well-known/ai-plugin.json")
 async def plugin_manifest():
   try:
-    write_log("plugin_manifest called")
-    return FileResponse("./.well-known/ai-plugin.json", media_type="text/json")
+    fp = open("./.well-known/ai-plugin.json", mode="r")
+    contents = fp.read()
+    return Response(content=contents.encode(), media_type="text/json")
   except Exception as e:
     write_log(f"plugin_manifest: {e}")
     return Response(status_code=500)
+  finally:
+    fp.close()
 
 # Plugin OpenAI spec in json.
 @app.get("/openapi.json")
 async def openapi_spec():
   try:
-    write_log("openapi_spec called")
-    return FileResponse("openapi.json", media_type="text/json")
+    fp = open("openapi.json", mode="r")
+    contents = fp.read()
+    return Response(content=contents.encode(), media_type="text/json")
   except Exception as e:
     write_log(f"openapi_spec: {e}")
     return Response(status_code=500)
+  finally:
+    fp.close()
+
 
 # Docs for the plugin.
 @app.get("/docs", include_in_schema=False)
