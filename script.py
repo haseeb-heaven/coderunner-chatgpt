@@ -491,8 +491,7 @@ async def download(filename: str):
 @app.get("/logo.png")
 async def plugin_logo():
   try:
-    with open('logo.png', 'rb') as f:
-      return StreamingResponse(f, media_type="image/png")
+    return FileResponse('logo.png', media_type="image/png")
   except Exception as e:
     write_log(f"plugin_logo: {e}")
     return Response(status_code=500)
