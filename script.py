@@ -491,9 +491,7 @@ async def download(filename: str):
 @app.get("/logo.png")
 async def plugin_logo():
   try:
-    filename = 'logo.png'
-    write_log(f"logo filename is {filename}")
-    with open(filename, 'rb') as f:
+    with open('logo.png', 'rb') as f:
       return StreamingResponse(f, media_type="image/png")
   except Exception as e:
     write_log(f"plugin_logo: {e}")
@@ -587,6 +585,8 @@ def setup_database():
   except Exception as e:
     write_log(str(e))
 
+def set_ulimit():
+  os.system('ulimit -n 65536')
 
 # Run the app.
 # Will only work with python script.py
@@ -594,6 +594,7 @@ if __name__ == "__main__":
   try:
     write_log("CodeRunner starting")
     database = setup_database()
+    set_ulimit()
     uvicorn.run(app)
     write_log("CodeRunner started")
   except Exception as e:
