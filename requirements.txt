@@ -1,7 +1,5 @@
 fastapi
-aiofiles
 uvicorn
-pydantic
 starlette
 contextvars
 matplotlib
