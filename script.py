@@ -490,20 +490,23 @@ def read_openapi_file():
     with open("openapi.json", "r") as f:
         return f.read()
 
-# Plugin logo
 @app.get("/logo.png", response_class=FileResponse)
 async def plugin_logo():
-    return FileResponse(Path("logo.png"), content=read_logo_file())
+    response = FileResponse(Path("logo.png"))
+    response.headers["Cache-Control"] = "public, max-age=86400"
+    return response
 
 @app.get("/.well-known/ai-plugin.json", response_class=JSONResponse)
 async def plugin_manifest():
-    return JSONResponse(content=read_manifest_file())
+    response = JSONResponse(content=read_manifest_file())
+    response.headers["Cache-Control"] = "public, max-age=86400"
+    return response
 
 @app.get("/openapi.json", response_class=JSONResponse)
 async def openapi_spec():
-    return JSONResponse(content=read_openapi_file())
-
-
+    response = JSONResponse(content=read_openapi_file())
+    response.headers["Cache-Control"] = "public, max-age=86400"
+    return response
 
 # Docs for the plugin.
 @app.get("/docs", include_in_schema=False)
