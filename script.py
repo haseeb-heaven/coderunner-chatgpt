@@ -21,15 +21,13 @@ import requests
 import json
 import uvicorn
 from pathlib import Path
-from fastapi.staticfiles import StaticFiles
 from starlette.requests import Request
 from contextvars import ContextVar
 import random
 import string
 import os
-from lib.safe_coder import is_code_safe
-from lib.python_runner import execute_code
 from lib.mongo_db import MongoDB
+from lib.python_runner import exec_python,execute_code
 
 # defining the url's
 plugin_url = "https://code-runner-plugin.vercel.app"
@@ -234,13 +232,6 @@ async def run_code():
         write_log("Trying to run Python code locally with all Libs installed.")
         graph_file = ""
         contains_graph = False
-        
-        # Execute the code in the script.
-        safe_code_dict = is_code_safe(script)
-        # Get tuple from list of tuples code_safe_dict
-        safe_code = safe_code_dict[0][0]
-        code_command = safe_code_dict[0][1]
-        code_snippet = safe_code_dict[0][2]
 
         # check is script has graphic libraries imported like matplotlib, seaborn, etc.
         if any(library in script for library in ['import matplotlib', 'import seaborn', 'import plotly']):
@@ -255,7 +246,6 @@ async def run_code():
             # replacing the line if it contains show() method
             script = "\n".join([line for line in script.splitlines() if "show()" not in line])
           
-          if safe_code:
             response = execute_code(script)
             write_log(f"run_code: executed script")
             
@@ -271,19 +261,10 @@ async def run_code():
               
             # Return the response as JSON
             write_log(f"run_code: response is {response}")
-          else:
-            error_response = f"Cannot run the code\nbecause of illegal command found '{code_command}' in code snippet '{code_snippet}'"
-            write_log(f"run_code Error: {error_response}")
-            return {"error": error_response}
         else:
           write_log(f"run_code: running script locally no graphic libraries found")
-          if safe_code:
-            response = execute_code(script)
-            return {"result": response}
-          else:
-            error_response = f"Cannot run the code\nbecause of illegal command found '{code_command}' in code snippet '{code_snippet}'"
-            write_log(f"run_code Error: {error_response}")
-            return {"error": error_response}
+          response = execute_code(script)
+          return {"result": response}
         return response
       except Exception as e:
         stack_trace = traceback.format_exc()
