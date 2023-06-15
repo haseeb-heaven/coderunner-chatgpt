@@ -468,45 +468,21 @@ async def download(filename: str):
     write_log(f"download: {e}")
     return JSONResponse(status_code=500, content={"error": str(e)})
 
-
-from fastapi.responses import JSONResponse
-from functools import lru_cache
-
-# Cache the logo file
-@lru_cache(maxsize=1)
-def read_logo_file():
-    with open("logo.png", "rb") as f:
-        return f.read()
-
-# Cache the manifest file
-@lru_cache(maxsize=1)
-def read_manifest_file():
-    with open("./.well-known/ai-plugin.json", "r") as f:
-        return f.read()
-
-# Cache the OpenAPI specification file
-@lru_cache(maxsize=1)
-def read_openapi_file():
-    with open("openapi.json", "r") as f:
-        return f.read()
-
 @app.get("/logo.png", response_class=FileResponse)
 async def plugin_logo():
     response = FileResponse(Path("logo.png"))
     response.headers["Cache-Control"] = "public, max-age=86400"
     return response
 
-@app.get("/.well-known/ai-plugin.json", response_class=JSONResponse)
+@app.get("/.well-known/ai-plugin.json", response_class=FileResponse)
 async def plugin_manifest():
-    manifest_json = json.loads(read_manifest_file())
-    response = JSONResponse(content=manifest_json)
+    response = FileResponse(Path(".well-known/ai-plugin.json"))
     response.headers["Cache-Control"] = "public, max-age=86400"
     return response
 
-@app.get("/openapi.json", response_class=JSONResponse)
+@app.get("/openapi.json", response_class=FileResponse)
 async def openapi_spec():
-    openapi_json = json.loads(read_openapi_file())
-    response = JSONResponse(content=openapi_json)
+    response = FileResponse(Path("openapi.json"))
     response.headers["Cache-Control"] = "public, max-age=86400"
     return response
 
