@@ -498,13 +498,15 @@ async def plugin_logo():
 
 @app.get("/.well-known/ai-plugin.json", response_class=JSONResponse)
 async def plugin_manifest():
-    response = JSONResponse(content=read_manifest_file())
+    manifest_json = json.loads(read_manifest_file())
+    response = JSONResponse(content=manifest_json)
     response.headers["Cache-Control"] = "public, max-age=86400"
     return response
 
 @app.get("/openapi.json", response_class=JSONResponse)
 async def openapi_spec():
-    response = JSONResponse(content=read_openapi_file())
+    openapi_json = json.loads(read_openapi_file())
+    response = JSONResponse(content=openapi_json)
     response.headers["Cache-Control"] = "public, max-age=86400"
     return response
 
