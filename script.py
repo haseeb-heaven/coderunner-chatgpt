@@ -469,18 +469,40 @@ async def download(filename: str):
     return JSONResponse(status_code=500, content={"error": str(e)})
 
 
-# Plugin logo.
+from fastapi.responses import JSONResponse
+from functools import lru_cache
+
+# Cache the logo file
+@lru_cache(maxsize=1)
+def read_logo_file():
+    with open("logo.png", "rb") as f:
+        return f.read()
+
+# Cache the manifest file
+@lru_cache(maxsize=1)
+def read_manifest_file():
+    with open("./.well-known/ai-plugin.json", "r") as f:
+        return f.read()
+
+# Cache the OpenAPI specification file
+@lru_cache(maxsize=1)
+def read_openapi_file():
+    with open("openapi.json", "r") as f:
+        return f.read()
+
+# Plugin logo
 @app.get("/logo.png", response_class=FileResponse)
 async def plugin_logo():
-    return Path("logo.png")
+    return FileResponse(Path("logo.png"), content=read_logo_file())
 
-@app.get("/.well-known/ai-plugin.json", response_class=FileResponse)
+@app.get("/.well-known/ai-plugin.json", response_class=JSONResponse)
 async def plugin_manifest():
-    return Path("./.well-known/ai-plugin.json")
+    return JSONResponse(content=read_manifest_file())
 
-@app.get("/openapi.json", response_class=FileResponse)
+@app.get("/openapi.json", response_class=JSONResponse)
 async def openapi_spec():
-    return Path("openapi.json")
+    return JSONResponse(content=read_openapi_file())
+
 
 
 # Docs for the plugin.
