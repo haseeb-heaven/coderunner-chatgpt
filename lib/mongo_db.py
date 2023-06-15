@@ -9,6 +9,7 @@ from pymongo import MongoClient
 from gridfs import GridFS
 from typing import Optional
 import base64
+plugin_url = "https://code-runner-plugin.vercel.app"
 
 #Creating MongoDB connector class
 class MongoDB:
@@ -293,16 +294,87 @@ class MongoDB:
     def delete_all_codes(self):
         return self._delete_all_documents("codes")
     
-    def delete_all_images(self):
-        return self._delete_all_documents("graphs")
+    def delete_all_graphs(self):
+        self._delete_all_documents("graphs.files")
+        return self._delete_all_documents("graphs.chunks")
+    
+    def delete_all_documents(self):
+        self._delete_all_documents("docs.files")
+        return self._delete_all_documents("docs.chunks")
     
     def reset_database(self):
         self.delete_all_codes()
-        self.delete_all_images()
-        self._delete_all_documents("graphs.files")
-        self._delete_all_documents("graphs.chunks")      
-        self._delete_all_documents("docs.chunks")      
-        self._delete_all_documents("docs.files")
+        self.delete_all_graphs()  
+        self.delete_all_documents()
         self.write_log("Resetting database to initial state")
+        
+    # method to list contents of a collection
+    def _list_all_files(self, collection):
+        try:
+            return self.db[collection].find()
+        except Exception as e:
+            self.write_log(f"Failed to list contents of {collection}: {e}")
+            raise e
+        
+    def list_all_collections(self):
+        # append all collections to a list
+        data_list = []
+        collections = ["codes", "graphs.files", "graphs.chunks", "docs.files", "docs.chunks"]
+        for collection in collections:
+            cursor = self._list_all_files(collection)
+            for item in cursor:
+                filename = item.get("filename")
+                if filename:
+                    filename = f'{plugin_url}/download/' + filename
+                    data_list.append({"filename": filename})
+        return data_list
+    
+    # Method to restore deleted documents
+    def restore_deleted_documents(self,db_name, collection_name, oplog_name):
+        try:
+            # Connect to the local MongoDB instance
+            client = MongoClient(self.MONGODB_URI)
+            db = client[db_name]
+            oplog = db[oplog_name]
+
+            # Query the Oplog for the deleted documents
+            oplog_query = {
+                "ns": f"{db_name}.{collection_name}",
+                "op": "d"
+            }
+
+            cursor = oplog.find(oplog_query)
+
+            # Loop through the deleted documents
+            for document in cursor:
+                # Get the _id of the deleted document
+                deleted_id = document["o"]["_id"]
+                # Find the corresponding insert operation in the Oplog
+                insert_query = {
+                    "ns": document["ns"],
+                    "op": "i",
+                    "o._id": deleted_id
+                }
+                insert_document = oplog.find_one(insert_query)
+                # Check if the insert operation exists
+                if insert_document:
+                    # Get the original document that was inserted
+                    original_document = insert_document["o"]
+                    # Connect to the original collection
+                    original_collection = db[collection_name]
+                    # Insert the original document back to the collection
+                    original_collection.insert_one(original_document)
+                    print(f"Restored document with _id {deleted_id} to collection {insert_document['ns']}")
+                else:
+                    print(f"Could not find insert operation for document with _id {deleted_id} in collection {document['ns']}")
+        except Exception as e:
+            print("Exception: ", e)
+
+        # Call the method with the desired parameters
+        #restore_deleted_documents("YOUR-DB", "graphs.files", "oplog.rs")
+
+
+    
+    
 
 

@@ -20,6 +20,7 @@ import gridfs
 import requests
 import json
 import uvicorn
+from pathlib import Path
 from fastapi.staticfiles import StaticFiles
 from starlette.requests import Request
 from contextvars import ContextVar
@@ -488,44 +489,17 @@ async def download(filename: str):
 
 
 # Plugin logo.
-@app.get("/logo.png")
+@app.get("/logo.png", response_class=FileResponse)
 async def plugin_logo():
-    try:
-        fp = open('logo.png', mode='rb')
-        contents = fp.read()
-        return Response(content=contents, media_type='image/png')
-    except Exception as e:
-        write_log(f"plugin_logo: {e}")
-        return Response(status_code=500)
-    finally:
-        fp.close()
-    
-# Plugin manifest.
-# Plugin manifest.
-@app.get("/.well-known/ai-plugin.json")
-async def plugin_manifest():
-  try:
-    fp = open("./.well-known/ai-plugin.json", mode="r")
-    contents = fp.read()
-    return Response(content=contents.encode(), media_type="text/json")
-  except Exception as e:
-    write_log(f"plugin_manifest: {e}")
-    return Response(status_code=500)
-  finally:
-    fp.close()
+    return Path("logo.png")
 
-# Plugin OpenAI spec in json.
-@app.get("/openapi.json")
+@app.get("/.well-known/ai-plugin.json", response_class=FileResponse)
+async def plugin_manifest():
+    return Path("./.well-known/ai-plugin.json")
+
+@app.get("/openapi.json", response_class=FileResponse)
 async def openapi_spec():
-  try:
-    fp = open("openapi.json", mode="r")
-    contents = fp.read()
-    return Response(content=contents.encode(), media_type="text/json")
-  except Exception as e:
-    write_log(f"openapi_spec: {e}")
-    return Response(status_code=500)
-  finally:
-    fp.close()
+    return Path("openapi.json")
 
 
 # Docs for the plugin.
@@ -601,7 +575,6 @@ def setup_database():
 if __name__ == "__main__":
   try:
     write_log("CodeRunner starting")
-    database = setup_database()
     uvicorn.run(app)
     write_log("CodeRunner started")
   except Exception as e:
