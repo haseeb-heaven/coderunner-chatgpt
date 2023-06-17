@@ -13,10 +13,12 @@ from io import StringIO
 import io
 import traceback
 from fastapi import FastAPI, Request, Response
+from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse,StreamingResponse,RedirectResponse,JSONResponse,HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import get_swagger_ui_html
 import gridfs
+from jinja2 import Environment, FileSystemLoader
 import requests
 import json
 import uvicorn
@@ -28,6 +30,7 @@ import string
 import os
 from lib.mongo_db import MongoDB
 from lib.python_runner import exec_python,execute_code
+
 
 # defining the url's
 plugin_url = "https://code-runner-plugin.vercel.app"
@@ -53,7 +56,12 @@ ORIGINS = [
 ]
 
 # Defining the app.
-app = FastAPI(openapi_url=None,docs_url="/docs")    
+app = FastAPI(openapi_url=None,docs_url="/docs")
+# Mount static files directory
+app.mount("/static", StaticFiles(directory="templates"), name="static")
+
+templates = Environment(loader=FileSystemLoader("templates"))
+
 app.add_middleware(
   CORSMiddleware,
   allow_origins=ORIGINS,
@@ -524,7 +532,6 @@ def show_credits_spent():
 
 
 @app.get('/help')
-@app.get('/')
 async def help():
   write_log("help: Displayed for Plugin Guide")
   # how to redirect to /docs
@@ -541,6 +548,12 @@ def privacy_policy():
         write_log("privacy_policy Content read success")
     # Return the HTML content as a response
     return HTMLResponse(content=html_content)
+
+@app.get("/")
+async def root():
+    template = templates.get_template("index.html")
+    content = template.render(name="World")
+    return HTMLResponse(content=content)
 
 def make_dirs():
   if not os.path.exists('codes'):
@@ -559,7 +572,7 @@ def setup_database():
 if __name__ == "__main__":
   try:
     write_log("CodeRunner starting")
-    uvicorn.run(app)
+    uvicorn.run("script:app",reload=True)
     write_log("CodeRunner started")
   except Exception as e:
     write_log(str(e))

@@ -5,3 +5,6 @@
 *.png
 *.log
 .env
+.vercel
+.env.local
+.env
