@@ -8,3 +8,4 @@ requests
 pymongo
 python-dotenv
 numpy
+jinja2
