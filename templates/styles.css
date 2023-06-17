@@ -1,51 +1,70 @@
 body {
-    background-color: #333;
-    font-family: Arial, sans-serif;
-    color: #fff;
-  }
-  
-  .container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #444;
-    border-radius: 8px;
-    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
-  }
-  
-  header {
-    text-align: center;
-    padding: 20px 0;
-  }
-  
-  textarea {
-    width: 100%;
-    min-height: 200px;
-    padding: 15px;
-    box-sizing: border-box;
-    border: 1px solid #555;
-    border-radius: 4px;
-    background-color: #555;
-    color: #fff;
-  }
-  
-  .buttons {
-    margin-top: 20px;
-    text-align: center;
-  }
-  
-  button {
-    padding: 10px 20px;
-    margin: 0 10px;
-    background-color: #ff6347;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  button:hover {
-    background-color: #cc4f37;
-  }
-  
+  font-family: Arial, sans-serif;
+  background-color: #e8f5e9;
+  color: #000;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  width: 80%;
+  margin: 0 auto;
+}
+
+header {
+  background-color: #1b5e20;
+  color: #fff;
+  padding: 10px 0;
+  text-align: center;
+}
+
+header h1, header h2 {
+  margin: 0;
+  padding-bottom: 10px;
+}
+
+.code-area {
+  margin-top: 20px;
+}
+
+#code-input {
+  width: 100%;
+  height: 200px;
+  border: 1px solid #1b5e20;
+  padding: 10px;
+  box-sizing: border-box;
+  background-color: #fff;
+  color: #000;
+}
+
+.buttons {
+  margin-top: 20px;
+}
+
+.btn {
+  background-color: #1b5e20;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+section {
+  background-color: #c8e6c9;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+section h3 {
+  margin-top: 0;
+}
+
+section a {
+  color: #1b5e20;
+  text-decoration: none;
+}

@@ -479,19 +479,19 @@ async def download(filename: str):
 @app.get("/logo.png", response_class=FileResponse)
 async def plugin_logo():
     response = FileResponse(Path("logo.png"))
-    response.headers["Cache-Control"] = "public, max-age=86400"
+    response.headers["Cache-Control"] = "public, max-age=31536000"
     return response
 
 @app.get("/.well-known/ai-plugin.json", response_class=FileResponse)
 async def plugin_manifest():
     response = FileResponse(Path(".well-known/ai-plugin.json"))
-    response.headers["Cache-Control"] = "public, max-age=86400"
+    response.headers["Cache-Control"] = "public, max-age=31536000"
     return response
 
 @app.get("/openapi.json", response_class=FileResponse)
 async def openapi_spec():
     response = FileResponse(Path("openapi.json"))
-    response.headers["Cache-Control"] = "public, max-age=86400"
+    response.headers["Cache-Control"] = "public, max-age=31536000"
     return response
 
 # Docs for the plugin.
