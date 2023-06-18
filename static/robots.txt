@@ -1,0 +1,15 @@
+# Rules for the ChatGPT-User robot
+User-agent: ChatGPT-User
+Disallow: /docs
+Disallow: /static
+Disallow: /resources
+Disallow: /templates
+
+# Rules for all other robots
+User-agent: *
+Disallow: /credit_limit
+Disallow: /.well-known/ai-plugin.json
+Disallow: /openapi.json
+Disallow: /static
+Disallow: /resources
+Disallow: /templates

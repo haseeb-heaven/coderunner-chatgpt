@@ -12,7 +12,7 @@ from datetime import datetime
 from io import StringIO
 import io
 import traceback
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse,StreamingResponse,RedirectResponse,JSONResponse,HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -402,7 +402,7 @@ async def upload():
       contents = bytes(file_data, 'utf-8')
       # save the file in the database
       database.docs.put(contents, filename=filename)
-      write_log(f"upload: saved code to database")
+      write_log(f"upload: saved file to database")
       # return the download link
       return {"download_link": f"{plugin_url}/download/{filename}"}
   except Exception as e:
@@ -554,6 +554,20 @@ async def root():
     template = templates.get_template("index.html")
     content = template.render(name="World")
     return HTMLResponse(content=content)
+
+@app.get("/robots.txt")
+async def read_robots():
+    try:
+        return FileResponse('static/robots.txt', media_type='text/plain')
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="File not found")
+
+@app.get("/favicon.ico")
+async def read_favicon():
+    try:
+        return FileResponse('static/favicon.ico', media_type='image/vnd.microsoft.icon')
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="File not found")
 
 def make_dirs():
   if not os.path.exists('codes'):
