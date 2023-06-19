@@ -58,9 +58,9 @@ ORIGINS = [
 # Defining the app.
 app = FastAPI(openapi_url=None,docs_url="/docs")
 # Mount static files directory
-app.mount("/static", StaticFiles(directory="templates"), name="static")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
-templates = Environment(loader=FileSystemLoader("templates"))
+templates = Environment(loader=FileSystemLoader("static"))
 
 app.add_middleware(
   CORSMiddleware,
