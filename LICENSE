@@ -1,5 +1,8 @@
 Proprietary License
-  The Plugin is proprietary software owned by Haseeb Mir (the "Owner"). The Owner grants you a limited, non-exclusive, non-transferable, revocable license to use the Plugin for your personal, non-commercial purposes, subject to the terms and conditions of this Agreement. You may not copy, modify, distribute, sell, rent, lease, sublicense, or otherwise transfer the Plugin or any part of it. You may not reverse engineer, decompile, disassemble, or create derivative works of the Plugin or any part of it. You may not remove any proprietary notices or labels on the Plugin. You may not use the Plugin for any illegal, harmful, or malicious purposes.
+  The Plugin is proprietary software owned by Haseeb Mir (the "Owner"). The Owner grants you a limited, non-exclusive, non-transferable, revocable license to use the Plugin for your personal, non-commercial purposes, subject to the terms and conditions of this Agreement. 
+  You may not copy, modify, distribute, sell, rent, lease, sublicense, or otherwise transfer the Plugin or any part of it. 
+  You may not reverse engineer, decompile, disassemble, or create derivative works of the Plugin or any part of it. 
+  You may not remove any proprietary notices or labels on the Plugin. You may not use the Plugin for any illegal, harmful, or malicious purposes.
   
   The Plugin uses the JDoodle Compiler API "https://www.jdoodle.com/compiler-api" to compile and run your code. 
     The JDoodle Compiler API is a third-party service that provides online code execution for various programming languages. The JDoodle

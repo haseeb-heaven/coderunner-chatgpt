@@ -1,13 +1,13 @@
 # Code Runner Plugin
 ![cover_logo](https://github.com/haseeb-heaven/CodeRunner-Plugin/blob/master/resources/logo.png?raw=true "")</br>
-[![Plugin](https://img.shields.io/badge/Code%20Runner-Plugin-blue)](https://coderunner-plugin.haseebmir.repl.co)
-[![Plugin - Manifest](https://img.shields.io/badge/Code%20Runner-Manifest-blue)](https://coderunner-plugin.haseebmir.repl.co/.well-known/ai-plugin.json)
-[![Plugin](https://img.shields.io/badge/Code%20Runner-Hosted-blue)](https://replit.com/@HaseebMir/CodeRunner-Plugin)</br>
+[![Plugin](https://img.shields.io/badge/Code%20Runner-Plugin-blue)](https://code-runner-plugin.vercel.app/)
+[![Plugin - Manifest](https://img.shields.io/badge/Code%20Runner-Manifest-blue)](https://code-runner-plugin.vercel.app/.well-known/ai-plugin.json)
+[![Plugin](https://img.shields.io/badge/Code%20Runner-Hosted-blue)](https://code-runner-plugin.vercel.app)</br>
 - **Support this Project** <a href="https://www.buymeacoffee.com/haseebheaven"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=haseebheaven&button_colour=40DCA5&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00" /></a>
 ## Introduction
 Check out my first awesome plugin for **ChatGPT** that lets you Run code in 70+ languages! 🙌👩‍💻👨‍💻 </br>
 This code will run this Plugin on your local machine with localhost:8000 as the URL. </br>
-If you want to use Hosted one then check The repo is hosted on [ReplIt](https://replit.com/@HaseebMir/CodeRunner-Plugin)
+If you want to use Hosted one then check The Website is hosted on [Vercel](https://code-runner-plugin.vercel.app/)
 
 ## Information
 💻 **Run And Save Code** in over 70 programming languages with ease! **Chat-GPT Code Runner** offers a *versatile* and *flexible* coding experience for developers of all levels.</br>
@@ -31,23 +31,13 @@ To run the plugin, enter the following command:
 python main.py or  uvicorn main:app --reload
 ```
 
-Once the local server is running:
-
 1. Navigate to https://chat.openai.com. </br>
 2. In the Model drop down, select "Plugins" (note, if you don't see it there, you don't have access yet).</br>
 3. Select "Plugin store"</br>
-4. Select "Develop your own plugin"</br>
-5. Enter in `localhost:8000` since this is the URL the server is running on locally, then select "Find manifest file".</br>
-- ### Finding the plugin.
-- Use **localhost:8000** to find the loccal version of plugin</br></br>
-- ![finding_plugin](https://github.com/haseeb-heaven/CodeRunner-Plugin/blob/master/resources/coderunner_find_local_plugin.png?raw=true "")</br></br>
-- Use **https://coderunner-plugin.haseebmir.repl.co** to find the hosted version of plugin</br></br>
-- ![finding_plugin](https://github.com/haseeb-heaven/CodeRunner-Plugin/blob/master/resources/coderunner_find_hosted_plugin.png?raw=true "")</br></br>
-- ### Installing the plugin
-- Installing the loccal version of plugin</br></br>
-- ![finding_plugin](https://github.com/haseeb-heaven/CodeRunner-Plugin/blob/master/resources/coderunner_install_local_plugin.png?raw=true "")</br></br>
-- Installing the hosted version of plugin</br></br>
-- ![finding_plugin](https://github.com/haseeb-heaven/CodeRunner-Plugin/blob/master/resources/coderunner_install_hosted_plugin.png?raw=true "")</br></br>
+4. Search for "Code Runner" </br>
+5. Authenticate the Plugin with your account with authenticaion code recieved in email by PluginLab Support.</br>
+6. Install and Run the plugin and ask ChatGPT to generate some code you and run them.
+![save_code](https://github.com/haseeb-heaven/CodeRunner-Plugin/blob/master/resources/plugin_search_result.png?raw=true "")</br>
 
 ## General Information
 
@@ -106,6 +96,11 @@ To get help with Code Runner Plugin, use the following prompt in the chat box an
 ![help](https://github.com/haseeb-heaven/CodeRunner-Plugin/blob/master/resources/coderunner_help_url.png?raw=true "")</br>
 
 ## License and Author
-Code Runner Plugin is licensed under the [MIT License](https://github.com/haseeb-heaven/CodeRunner-Plugin/blob/main/LICENSE).</br>
+Code Runner Plugin is licensed under the [Proprietary License](https://github.com/haseeb-heaven/CodeRunner-Plugin/blob/main/LICENSE).</br> make sure you read and understands everything written in license and agree to them before using the plugin.
+
+## Privacy Policy.
+The privacy policy for Plugin and Website could be found here [Privacy Policy](https://code-runner-plugin.vercel.app/privacy)
+make sure you read them carefully before executing them.
+
 Code Runner Plugin is developed by [Haseeb Heaven](https://github.com/haseeb-heaven), a software engineer and AI enthusiast.</br>
 If you have any feedback or suggestions for Code Runner Plugin, feel free to contact me at [Email](haseebmir.hm@gmail.com) or open an issue on GitHub.</br>
