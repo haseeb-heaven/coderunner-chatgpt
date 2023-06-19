@@ -32,12 +32,19 @@ from lib.mongo_db import MongoDB
 from lib.python_runner import exec_python,execute_code
 
 
+# defining the allowed user agent and ip range.
+# Reference: https://platform.openai.com/docs/plugins/bot
+
+allowed_user_agent = "ChatGPT-User"
+allowed_ip_range = "23.98.142.176/28"
+restricted_endpoints = ['/run_code', '/save_code', '/upload', '/credit_limit']
+
+
 # defining the url's
 plugin_url = "https://code-runner-plugin.vercel.app"
 chatgpt_url = "https://chat.openai.com"
 credit_spent_url = "https://api.jdoodle.com/v1/credit-spent"
 compiler_url = "https://api.jdoodle.com/v1/execute"
-
 
 # setting the database.
 global database
@@ -187,6 +194,15 @@ def set_request(request: Request):
 @app.middleware("http")
 async def set_request_middleware(request: Request, call_next):
     try:
+        user_agent = request.headers.get("User-Agent", "")
+        client_ip = request.client.host
+        request_path = request.url.path
+  
+        if request_path in restricted_endpoints or '/download' in request_path:
+            if not (allowed_user_agent in user_agent):
+                write_log(f"set_request_middleware Invalid user_agent: {user_agent}, client_ip: {client_ip}")
+                return JSONResponse(content={"error": "Access denied"}, status_code=403)
+
         set_request(request)
         response = await call_next(request)
         return response
@@ -558,14 +574,18 @@ async def root():
 @app.get("/robots.txt")
 async def read_robots():
     try:
-        return FileResponse('static/robots.txt', media_type='text/plain')
+        response = FileResponse('static/robots.txt', media_type='text/plain')
+        response.headers["Cache-Control"] = "public, max-age=31536000"
+        return response
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail="File not found")
 
 @app.get("/favicon.ico")
 async def read_favicon():
     try:
-        return FileResponse('static/favicon.ico', media_type='image/vnd.microsoft.icon')
+        response = FileResponse('static/favicon.ico', media_type='image/vnd.microsoft.icon')
+        response.headers["Cache-Control"] = "public, max-age=31536000"
+        return response
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail="File not found")
 
@@ -586,7 +606,7 @@ def setup_database():
 if __name__ == "__main__":
   try:
     write_log("CodeRunner starting")
-    uvicorn.run("script:app",reload=True)
+    uvicorn.run(app)
     write_log("CodeRunner started")
   except Exception as e:
     write_log(str(e))
