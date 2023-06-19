@@ -7,7 +7,8 @@
 ## Introduction
 Check out my first awesome plugin for **ChatGPT** that lets you Run code in 70+ languages! 🙌👩‍💻👨‍💻 </br>
 This code will run this Plugin on your local machine with localhost:8000 as the URL. </br>
-If you want to use Hosted one then check The Website is hosted on [Vercel](https://code-runner-plugin.vercel.app/)
+If you want to use Hosted one then check The Website is hosted on [Vercel](https://code-runner-plugin.vercel.app/)</br>
+Checkout new designed website for [Code Runner](https://vercel-wxfx.b12sites.com) </br>
 
 ## Information
 💻 **Run And Save Code** in over 70 programming languages with ease! **Chat-GPT Code Runner** offers a *versatile* and *flexible* coding experience for developers of all levels.</br>
@@ -36,8 +37,8 @@ python main.py or  uvicorn main:app --reload
 3. Select "Plugin store"</br>
 4. Search for "Code Runner" </br>
 5. Authenticate the Plugin with your account with authenticaion code recieved in email by PluginLab Support.</br>
-6. Install and Run the plugin and ask ChatGPT to generate some code you and run them.
-![save_code](https://github.com/haseeb-heaven/CodeRunner-Plugin/blob/master/resources/plugin_search_result.png?raw=true "")</br>
+6. Install and Run the plugin and ask ChatGPT to generate some code you and run them.</br>
+![search_plugin](https://github.com/haseeb-heaven/CodeRunner-Plugin/blob/server/resources/plugin_search_result.png?raw=true "")</br>
 
 ## General Information
 

@@ -45,6 +45,7 @@ plugin_url = "https://code-runner-plugin.vercel.app"
 chatgpt_url = "https://chat.openai.com"
 credit_spent_url = "https://api.jdoodle.com/v1/credit-spent"
 compiler_url = "https://api.jdoodle.com/v1/execute"
+website_url = "https://vercel-wxfx.b12sites.com"
 
 # setting the database.
 global database
@@ -567,9 +568,7 @@ def privacy_policy():
 
 @app.get("/")
 async def root():
-    template = templates.get_template("index.html")
-    content = template.render(name="World")
-    return HTMLResponse(content=content)
+    return RedirectResponse(url=website_url, status_code=302)
 
 @app.get("/robots.txt")
 async def read_robots():
