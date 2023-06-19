@@ -1,21 +1,18 @@
-MIT License
-
-Copyright (c) 2023 Haseeb Mir
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Proprietary License
+  The Plugin is proprietary software owned by Haseeb Mir (the "Owner"). The Owner grants you a limited, non-exclusive, non-transferable, revocable license to use the Plugin for your personal, non-commercial purposes, subject to the terms and conditions of this Agreement. You may not copy, modify, distribute, sell, rent, lease, sublicense, or otherwise transfer the Plugin or any part of it. You may not reverse engineer, decompile, disassemble, or create derivative works of the Plugin or any part of it. You may not remove any proprietary notices or labels on the Plugin. You may not use the Plugin for any illegal, harmful, or malicious purposes.
+  
+  The Plugin uses the JDoodle Compiler API "https://www.jdoodle.com/compiler-api" to compile and run your code. 
+    The JDoodle Compiler API is a third-party service that provides online code execution for various programming languages. The JDoodle
+    Compiler API may have its own terms and conditions and privacy policy that apply to your use of the service. You
+    can find them at "https://www.jdoodle.com/terms" and "https://www.jdoodle.com/privacy"
+  
+  You are solely responsible for the code that you write, compile, and run using the Plugin. You agree not to
+    write, compile, or run any code that is illegal, harmful, malicious, offensive, infringing, or otherwise
+    violates any laws, rights, or policies. You agree not to write, compile, or run any code that may damage,
+    interfere with, or compromise the Plugin, the JDoodle Compiler API, or any other systems or services. You agree
+    not to write, compile, or run any code that may access or disclose any confidential or sensitive information.
+  
+  You acknowledge and agree that the Owner has no control over or liability for the code that you write,
+    compile, and run using the Plugin. You acknowledge and agree that the Owner does not guarantee the
+    availability, accuracy, reliability, security, or performance of the Plugin or the JDoodle Compiler API or any other systems or services used by the Plugin. You acknowledge and agree that the Owner is not responsible for any loss,
+    damage, or harm caused by your use of the Plugin or the JDoodle Compiler API.
