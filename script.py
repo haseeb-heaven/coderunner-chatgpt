@@ -198,7 +198,7 @@ async def set_request_middleware(request: Request, call_next):
         client_ip = request.client.host
         request_path = request.url.path
   
-        if request_path in restricted_endpoints or '/download' in request_path:
+        if request_path in restricted_endpoints: #or '/download' in request_path: This is now allowed to download the file.
             if not (allowed_user_agent in user_agent):
                 write_log(f"set_request_middleware Invalid user_agent: {user_agent}, client_ip: {client_ip}")
                 return JSONResponse(content={"error": "Access denied"}, status_code=403)
