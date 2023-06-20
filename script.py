@@ -45,7 +45,7 @@ plugin_url = "https://code-runner-plugin.vercel.app"
 chatgpt_url = "https://chat.openai.com"
 credit_spent_url = "https://api.jdoodle.com/v1/credit-spent"
 compiler_url = "https://api.jdoodle.com/v1/execute"
-website_url = "https://vercel-wxfx.b12sites.com"
+website_url = "https://code-runner-plugin.b12sites.com/"
 
 # setting the database.
 global database
