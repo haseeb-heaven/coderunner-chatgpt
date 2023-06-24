@@ -385,7 +385,7 @@ class MongoDB:
             print("Exception: ", e)
     
     # Create now new user with user data.
-    def create_user(self, user_id=None, user_email=None, user_password=None):
+    def create_user(self, user_id=None, user_email=None, user_password=None,created_at_ms=None,updated_at_ms=None,is_verified=None):
         try:
             # check for user id and email not to be none
             if user_id is None or user_email is None:
@@ -399,7 +399,10 @@ class MongoDB:
             user = {
                 "id": user_id,
                 "email": user_email,
-                "password": user_password
+                "password": user_password,
+                "createdAt": created_at_ms,
+                "updatedAt": updated_at_ms,
+                "isVerified": is_verified
             }
             collection.insert_one(user)
             print(f"Added new user to collection {collection_name}")
@@ -407,7 +410,7 @@ class MongoDB:
             print("Exception: ", e)
     
     # Update user with new data.
-    def update_user(self, user_id=None, user_email=None, user_password=None):
+    def update_user(self, user_id=None, user_email=None, user_password=None,created_at_ms=None,updated_at_ms=None,is_verified=None):
         try:
             # check for user id and email not to be none
             if user_id is None or user_email is None:
@@ -419,7 +422,7 @@ class MongoDB:
             collection_name = "users"
             collection = db[collection_name]
             filter = {"id": user_id}
-            update = {"$set": {"email": user_email, "password": user_password}}
+            update = {"$set": {"email": user_email, "password": user_password, "createdAt": created_at_ms, "updatedAt": updated_at_ms, "isVerified": is_verified}}
             result = collection.update_one(filter, update)
             
             if result.modified_count == 0:
@@ -451,6 +454,5 @@ class MongoDB:
                 print(f"db_update_quota: user successfully updated")
         except Exception as e:
             print("Exception: ", e)
-            
 
 

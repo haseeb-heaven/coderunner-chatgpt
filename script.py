@@ -508,6 +508,7 @@ async def user_create():
             data = await request.json()
             write_log(f"user_create: data is present")
             auth = data.get("auth")
+            is_verified = auth.get("isVerified")
             
             # Get the user data.
             email = auth.get("email")
@@ -520,8 +521,12 @@ async def user_create():
                 password = None
             id = data.get("id")
             
+            # get the timestamps
+            created_at_ms = data.get("createdAtMs")
+            updated_at_ms = data.get("updatedAtMs")
+            
             # Create the user in the database.
-            database.create_user(id, email, password)
+            database.create_user(id, email, password,created_at_ms, updated_at_ms, is_verified)
             
             return {"message": "User created successfully", "status": 201}
         else:
@@ -572,11 +577,21 @@ async def user_update():
             else:
                 after_password = None
             
-            # Do something with the user data, such as updating in a database
+            # get the timestamps before
+            created_at_ms_before = before.get("createdAtMs")
+            updated_at_ms_before = before.get("updatedAtMs")
+            is_verified_before = before.get("isVerified")
+            
+            # get the timestamps after
+            created_at_ms_after = after.get("createdAtMs")
+            updated_at_ms_after = after.get("updatedAtMs")
+            is_verified_after = after.get("isVerified")
+            
             # check if before user data is the same as after user data
-            if before_email != after_email or before_id != after_id or before_password != after_password:
+            if before_email != after_email or before_id != after_id or before_password != after_password \
+            or created_at_ms_before != created_at_ms_after or updated_at_ms_before != updated_at_ms_after or is_verified_before != is_verified_after:
                 # Update the user in the database.
-                database.update_user(after_id, after_email, after_password,None)
+                database.update_user(after_id, after_email, after_password,created_at_ms_after, updated_at_ms_after, is_verified_after)
             
             # Return a success message and status code
             return {"message": "User updated successfully", "status": 201}
@@ -594,7 +609,7 @@ async def user_quota():
     try:
         request = get_request()
         user_agent = request.headers.get("user-agent")
-        if user_agent == "PluginLab-Webhook-Delivery":
+        if user_agent == webhook_user_agent:
             data = await request.json()
             write_log(f"run_code: data is present")
             
