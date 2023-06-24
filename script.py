@@ -252,7 +252,7 @@ async def run_code():
 
         # check is script has graphic libraries imported like matplotlib, seaborn, etc.
         if any(library in script for library in ['import matplotlib', 'import seaborn', 'import plotly']):
-          write_log("Graphic libraries found in script. Trying to run Python code locally with all Libs installed.")
+          write_log("run_code: Graphic libraries found in script. Trying to run Python code locally with all Libs installed.")
           
           # check if script contains "show()" method.
           if any(method in script for method in ['show()', 'plt.show()', 'pyplot.show()']):
@@ -264,7 +264,7 @@ async def run_code():
             script = "\n".join([line for line in script.splitlines() if "show()" not in line])
           
             response = execute_code(script)
-            write_log(f"run_code: executed script")
+            write_log(f"run_code: executed python script")
             
             # Save the plot as an image file in a buffer
             if contains_graph:
@@ -288,11 +288,21 @@ async def run_code():
         write_log(f"run_code: failed to execute script: {e}\nStack: {stack_trace}")
         raise e
 
-
+    # Section of JDoodle API call.
     # Declare input and compileOnly optional.
     input = data.get('input', None)
     compile_only = data.get('compileOnly', False)
-
+    is_code_empty = not script or script.isspace() or script == '' or script.__len__() == 0
+    
+    if is_code_empty:
+      write_log(f"run_code: code is empty before sending request")
+      
+      script = data.get('code')
+      is_code_empty = not script or script.isspace() or script == '' or script.__len__() == 0
+      
+      if is_code_empty:
+        return {"error": "Code is empty.Please enter the code and try again."}
+    
     # Get the JDoodle client ID and secret.
     client_id, client_secret = get_jdoodle_client()
     headers = {
