@@ -40,6 +40,7 @@ allowed_user_agent = "ChatGPT-User"
 allowed_ip_range = "23.98.142.176/28"
 restricted_endpoints = ['/run_code', '/save_code', '/upload', '/credit_limit']
 """
+webhook_user_agent = "PluginLab-Webhook-Delivery"
 
 # defining the url's
 plugin_url = "https://code-runner-plugin.vercel.app"
@@ -494,6 +495,145 @@ async def download(filename: str):
   except Exception as e:
     write_log(f"download: {e}")
     return JSONResponse(status_code=500, content={"error": str(e)})
+
+# Endpoints for WebHooks.
+
+# Route for user_create event.
+@app.post("/user_create")
+async def user_create():
+    try:
+        request = get_request()
+        user_agent = request.headers.get("User-Agent")
+        if user_agent == webhook_user_agent:
+            data = await request.json()
+            write_log(f"run_code: data is {data}")
+            auth = data.get("auth")
+            
+            # Get the user data.
+            email = auth.get("email")
+            # Check if the user has a password
+            has_password = auth.get("hasPassword")
+            # If the user has a password, extract it
+            if has_password:
+                password = auth.get("password")
+            else:
+                password = None
+            id = data.get("id")
+            
+            # Create the user in the database.
+            database.create_user(id, email, password)
+            
+            return {"message": "User created successfully", "status": 201}
+        else:
+            write_log(f"user_create: invalid user agent {user_agent}")
+            return {"message": f"Invalid user agent: {user_agent}", "status": 403}
+    except Exception as e:
+        write_log(f"user_create: {e}")
+        return {"message": f"An error occurred: {e}", "status": 400}
+
+  
+# Route for user_update event.
+@app.post("/user_update")
+async def user_update():
+    try:
+        request = get_request()
+        user_agent = request.headers.get("User-Agent")
+        if user_agent == webhook_user_agent:
+            data = await request.json()
+            write_log(f"run_code: data is {data}")
+            # Get the before and after dictionaries from the data
+            before = data.get("before")
+            after = data.get("after")
+            
+            # Get the auth dictionaries from the before and after dictionaries
+            before_auth = before.get("auth")
+            after_auth = after.get("auth")
+            
+            # Get the email and id from the before and after auth dictionaries
+            before_email = before_auth.get("email")
+            before_id = before.get("id")
+            
+            after_email = after_auth.get("email")
+            after_id = after.get("id")
+            
+            # Check if the user has a password before and after the update
+            before_has_password = before_auth.get("hasPassword")
+            after_has_password = after_auth.get("hasPassword")
+            
+            # If the user has a password before the update, extract it
+            if before_has_password:
+                before_password = before_auth.get("password")
+            else:
+                before_password = None
+                # before_password = generate_random_password()
+            # If the user has a password after the update, extract it
+            if after_has_password:
+                after_password = after_auth.get("password")
+            else:
+                after_password = None
+            
+            # Do something with the user data, such as updating in a database
+            # check if before user data is the same as after user data
+            if before_email != after_email or before_id != after_id or before_password != after_password:
+                # Update the user in the database.
+                database.update_user(after_id, after_email, after_password,None)
+            
+            # Return a success message and status code
+            return {"message": "User updated successfully", "status": 201}
+        else:
+            write_log(f"user_update: invalid user agent {user_agent}")
+            return {"message": f"Invalid user agent: {user_agent}", "status": 403}
+    except Exception as e:
+        write_log(f"user_update: {e}")
+        return {"message": f"An error occurred: {e}", "status": 400}
+
+  
+# Route for user_quota event.
+@app.post("/user_quota")
+async def user_quota():
+    try:
+        request = get_request()
+        user_agent = request.headers.get("user-agent")
+        if user_agent == "PluginLab-Webhook-Delivery":
+            data = await request.json()
+            write_log(f"run_code: data is {data}")
+            
+            # Get the member and quotaInfo dictionaries from the data
+            member = data.get("member")
+            quotaInfo = data.get("quotaInfo")
+            
+            # Get the auth dictionary from the member dictionary
+            auth = member.get("auth")
+            # Get the email and id from the auth dictionary
+            email = auth.get("email")
+            id = auth.get("id")
+            
+            # Extract and rename the required information from the quotaInfo
+            quota_usage = quotaInfo.get("currentUsageCount")
+            quota_usage_percent = quotaInfo.get("currentUsagePercentage")
+            is_quota_exceeded = quotaInfo.get("isQuotaExceeded")
+            quota_interval = quotaInfo.get("quotaInterval")
+            quota_limit = quotaInfo.get("quotaLimit")
+            # Create a new JSON object called quota with the extracted information
+            quota = {
+                "quota_usage": quota_usage,
+                "quota_usage_percent": quota_usage_percent,
+                "is_quota_exceeded": is_quota_exceeded,
+                "quota_interval": quota_interval,
+                "quota_limit": quota_limit
+            
+            }
+            # Update the user in the database.
+            database.update_user_quota(id,email,quota)
+            
+            # Return a success message and status code
+            return {"message": "User quota processed successfully", "status": 201}
+        else:
+            write_log(f"user_quota: invalid user agent {user_agent}")
+            return {"message": f"Invalid user agent: {user_agent}", "status": 403}
+    except Exception as e:
+        write_log(f"user_quota: {e}")
+        return {"message": f"An error occurred: {e}", "status": 400}
 
 @app.get("/logo.png", response_class=FileResponse)
 async def plugin_logo():

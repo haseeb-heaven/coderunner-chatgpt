@@ -34,6 +34,7 @@ class MongoDB:
         self.codes = GridFS(self.db, "codes")
         self.docs = GridFS(self.db, "docs")
         self.img = GridFS(self.db, "img")
+        self.users = GridFS(self.db, "users")
         
     def _connect(self):
         #Connecting to the database using the URI
@@ -373,8 +374,83 @@ class MongoDB:
         # Call the method with the desired parameters
         #restore_deleted_documents("YOUR-DB", "graphs.files", "oplog.rs")
 
+    # Method to create new collection for users.
+    def create_new_collection(self, collection_name):
+        try:
+            # Connect to the local MongoDB instance
+            db = self.db
+            db.create_collection(collection_name)
+            print(f"Created new collection {collection_name}")
+        except Exception as e:
+            print("Exception: ", e)
+    
+    # Create now new user with user data.
+    def create_user(self, user_id=None, user_email=None, user_password=None):
+        try:
+            # check for user id and email not to be none
+            if user_id is None or user_email is None:
+                print("db_create_user: User id and email cannot be empty")
+                return
+            
+            # Connect to the local MongoDB instance
+            db = self.db
+            collection_name = "users"
+            collection = db[collection_name]
+            user = {
+                "id": user_id,
+                "email": user_email,
+                "password": user_password
+            }
+            collection.insert_one(user)
+            print(f"Added new user to collection {collection_name}")
+        except Exception as e:
+            print("Exception: ", e)
+    
+    # Update user with new data.
+    def update_user(self, user_id=None, user_email=None, user_password=None):
+        try:
+            # check for user id and email not to be none
+            if user_id is None or user_email is None:
+                print("db_update_user: User id and email cannot be empty")
+                return
+            
+            # Connect to the local MongoDB instance
+            db = self.db
+            collection_name = "users"
+            collection = db[collection_name]
+            filter = {"id": user_id}
+            update = {"$set": {"email": user_email, "password": user_password}}
+            result = collection.update_one(filter, update)
+            
+            if result.modified_count == 0:
+                print(f"db_update_user: User not found")
+            else:
+                print(f"db_update_user: user successfully updated")
+        except Exception as e:
+            print("Exception: ", e)
+            
+    # Update user quota.
+    def update_user_quota(self, user_id=None,user_email = None, quota=None):
+        try:
+            # check for user id and email not to be none
+            if user_id is None or user_email is None or quota is None:
+                print("db_update_quota: User id and quota cannot be empty")
+                return
 
-    
-    
+            # Connect to the local MongoDB instance
+            db = self.db
+            collection_name = "users"
+            collection = db[collection_name]
+            filter = {"id": user_id}
+            update = {"$set": {"email": user_email, "quota": quota}}
+            result = collection.update_one(filter, update)
+
+            if result.modified_count == 0:
+                print(f"db_update_quota: User not found")
+            else:
+                print(f"db_update_quota: user successfully updated")
+        except Exception as e:
+            print("Exception: ", e)
+            
 
 
