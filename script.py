@@ -506,7 +506,7 @@ async def user_create():
         user_agent = request.headers.get("User-Agent")
         if user_agent == webhook_user_agent:
             data = await request.json()
-            write_log(f"run_code: data is {data}")
+            write_log(f"user_create: data is present")
             auth = data.get("auth")
             
             # Get the user data.
@@ -540,7 +540,7 @@ async def user_update():
         user_agent = request.headers.get("User-Agent")
         if user_agent == webhook_user_agent:
             data = await request.json()
-            write_log(f"run_code: data is {data}")
+            write_log(f"user_update: data is present")
             # Get the before and after dictionaries from the data
             before = data.get("before")
             after = data.get("after")
@@ -596,7 +596,7 @@ async def user_quota():
         user_agent = request.headers.get("user-agent")
         if user_agent == "PluginLab-Webhook-Delivery":
             data = await request.json()
-            write_log(f"run_code: data is {data}")
+            write_log(f"run_code: data is present")
             
             # Get the member and quotaInfo dictionaries from the data
             member = data.get("member")
