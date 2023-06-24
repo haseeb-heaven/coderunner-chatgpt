@@ -34,11 +34,12 @@ from lib.python_runner import exec_python,execute_code
 
 # defining the allowed user agent and ip range.
 # Reference: https://platform.openai.com/docs/plugins/bot
-
+# Taken care by PluginsLab now.
+"""
 allowed_user_agent = "ChatGPT-User"
 allowed_ip_range = "23.98.142.176/28"
 restricted_endpoints = ['/run_code', '/save_code', '/upload', '/credit_limit']
-
+"""
 
 # defining the url's
 plugin_url = "https://code-runner-plugin.vercel.app"
@@ -195,15 +196,6 @@ def set_request(request: Request):
 @app.middleware("http")
 async def set_request_middleware(request: Request, call_next):
     try:
-        user_agent = request.headers.get("User-Agent", "")
-        client_ip = request.client.host
-        request_path = request.url.path
-  
-        if request_path in restricted_endpoints: #or '/download' in request_path: This is now allowed to download the file.
-            if not (allowed_user_agent in user_agent):
-                write_log(f"set_request_middleware Invalid user_agent: {user_agent}, client_ip: {client_ip}")
-                return JSONResponse(content={"error": "Access denied"}, status_code=403)
-
         set_request(request)
         response = await call_next(request)
         return response
