@@ -8,7 +8,7 @@ Author : HeavenHM
 """
 
 # Importing the required libraries.
-from datetime import datetime
+from datetime import datetime, timezone
 from io import StringIO
 import io
 import traceback
@@ -498,6 +498,13 @@ async def download(filename: str):
 
 # Endpoints for WebHooks.
 
+# Utility method for timestamp conversion.
+def timestamp_to_iso(ts):
+  # ts is a timestamp in milliseconds
+  dt = datetime.datetime.fromtimestamp(ts/1000, timezone.utc) # convert to seconds and create a UTC datetime object
+  iso = dt.astimezone().isoformat() # convert to local timezone and ISO 8601 format
+  return iso
+
 # Route for user_create event.
 @app.post("/user_create")
 async def user_create():
@@ -525,8 +532,12 @@ async def user_create():
             created_at_ms = data.get("createdAtMs")
             updated_at_ms = data.get("updatedAtMs")
             
+            # convert the timestamps to ISO format
+            created_at = timestamp_to_iso(created_at_ms)
+            updated_at = timestamp_to_iso(updated_at_ms)
+            
             # Create the user in the database.
-            database.create_user(id, email, password,created_at_ms, updated_at_ms, is_verified)
+            database.create_user(id, email, password,created_at, updated_at, is_verified)
             
             return {"message": "User created successfully", "status": 201}
         else:
@@ -580,18 +591,28 @@ async def user_update():
             # get the timestamps before
             created_at_ms_before = before.get("createdAtMs")
             updated_at_ms_before = before.get("updatedAtMs")
+            
+            # convert the timestamps to ISO format
+            created_at_before = timestamp_to_iso(created_at_ms_before)
+            updated_at_before = timestamp_to_iso(updated_at_ms_before)
+            
             is_verified_before = before.get("isVerified")
             
             # get the timestamps after
             created_at_ms_after = after.get("createdAtMs")
             updated_at_ms_after = after.get("updatedAtMs")
+            
+            # convert the timestamps to ISO format
+            created_at_after = timestamp_to_iso(created_at_ms_after)
+            updated_at_after = timestamp_to_iso(updated_at_ms_after)
+            
             is_verified_after = after.get("isVerified")
             
             # check if before user data is the same as after user data
             if before_email != after_email or before_id != after_id or before_password != after_password \
             or created_at_ms_before != created_at_ms_after or updated_at_ms_before != updated_at_ms_after or is_verified_before != is_verified_after:
                 # Update the user in the database.
-                database.update_user(after_id, after_email, after_password,created_at_ms_after, updated_at_ms_after, is_verified_after)
+                database.update_user(after_id, after_email, after_password,created_at_after, updated_at_after, is_verified_after)
             
             # Return a success message and status code
             return {"message": "User updated successfully", "status": 201}
@@ -629,6 +650,7 @@ async def user_quota():
             is_quota_exceeded = quotaInfo.get("isQuotaExceeded")
             quota_interval = quotaInfo.get("quotaInterval")
             quota_limit = quotaInfo.get("quotaLimit")
+            
             # Create a new JSON object called quota with the extracted information
             quota = {
                 "quota_usage": quota_usage,

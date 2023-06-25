@@ -454,5 +454,3 @@ class MongoDB:
                 print(f"db_update_quota: user successfully updated")
         except Exception as e:
             print("Exception: ", e)
-
-
