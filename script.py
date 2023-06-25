@@ -501,7 +501,7 @@ async def download(filename: str):
 # Utility method for timestamp conversion.
 def timestamp_to_iso(ts):
   # ts is a timestamp in milliseconds
-  dt = datetime.datetime.fromtimestamp(ts/1000, timezone.utc) # convert to seconds and create a UTC datetime object
+  dt = datetime.fromtimestamp(ts/1000, timezone.utc) # convert to seconds and create a UTC datetime object
   iso = dt.astimezone().isoformat() # convert to local timezone and ISO 8601 format
   return iso
 
