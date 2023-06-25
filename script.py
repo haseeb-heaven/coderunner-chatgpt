@@ -632,17 +632,14 @@ async def user_quota():
         user_agent = request.headers.get("user-agent")
         if user_agent == webhook_user_agent:
             data = await request.json()
-            write_log(f"run_code: data is present")
+            write_log(f"user_quota: data is present")
             
             # Get the member and quotaInfo dictionaries from the data
             member = data.get("member")
             quotaInfo = data.get("quotaInfo")
             
-            # Get the auth dictionary from the member dictionary
-            auth = member.get("auth")
-            # Get the email and id from the auth dictionary
-            email = auth.get("email")
-            id = auth.get("id")
+            # Get the id dictionary from the member dictionary
+            id = member.get("id")
             
             # Extract and rename the required information from the quotaInfo
             quota_usage = quotaInfo.get("currentUsageCount")
@@ -661,7 +658,7 @@ async def user_quota():
             
             }
             # Update the user in the database.
-            database.update_user_quota(id,email,quota)
+            database.update_user_quota(id,quota)
             
             # Return a success message and status code
             return {"message": "User quota processed successfully", "status": 201}

@@ -433,10 +433,10 @@ class MongoDB:
             print("Exception: ", e)
             
     # Update user quota.
-    def update_user_quota(self, user_id=None,user_email = None, quota=None):
+    def update_user_quota(self, user_id=None,quota=None):
         try:
             # check for user id and email not to be none
-            if user_id is None or user_email is None or quota is None:
+            if user_id is None or quota is None:
                 print("db_update_quota: User id and quota cannot be empty")
                 return
 
@@ -445,7 +445,7 @@ class MongoDB:
             collection_name = "users"
             collection = db[collection_name]
             filter = {"id": user_id}
-            update = {"$set": {"email": user_email, "quota": quota}}
+            update = {"$set": {"quota": quota}}
             result = collection.update_one(filter, update)
 
             if result.modified_count == 0:
