@@ -50,6 +50,8 @@ chatgpt_url = "https://chat.openai.com"
 credit_spent_url = "https://api.jdoodle.com/v1/credit-spent"
 compiler_url = "https://api.jdoodle.com/v1/execute"
 website_url = "https://code-runner-plugin.b12sites.com/"
+discord_url = "https://discord.gg/BCRUpv4d6H"
+github_url = "https://github.com/haseeb-heaven/CodeRunner-Plugin"
 
 # setting the database.
 global database
@@ -283,6 +285,12 @@ async def run_code():
         else:
           write_log(f"run_code: running script locally no graphic libraries found")
           response = execute_code(script)
+          response = {"output": response}
+          
+          # Append the link to the discord and github repos.
+          response['discord'] = discord_url
+          response['github'] = github_url
+          
           return {"result": response}
         return response
       except Exception as e:
@@ -331,10 +339,12 @@ async def run_code():
     response_data = requests.post(compiler_url,headers=headers,data=json.dumps(body))
     response = json.loads(response_data.content.decode('utf-8'))
 
-    # Check reponse status code before appending the code id.
+    # Append the discord and github URLs to the response.
     if response_data.status_code == 200:
       unique_id = generate_code_id(response)
       response['id'] = unique_id
+      response['discord'] = discord_url
+      response['github'] = github_url
 
     write_log(f"run_code: {response}")
   except Exception as e:
@@ -418,7 +428,7 @@ async def upload():
       return {"download_link": f"{plugin_url}/download/{filename}"}
     
     elif file_extension in ['.pdf', '.doc', '.docx','.csv','.xls','.xlsx','.txt','.json']:
-      write_log(f"upload: code filename is {filename}")
+      write_log(f"upload: document filename is {filename}")
       # convert the data to bytes
       contents = bytes(file_data, 'utf-8')
       # save the file in the database
@@ -728,8 +738,8 @@ def show_credits_spent():
 @app.get('/help')
 async def help():
   write_log("help: Displayed for Plugin Guide")
-  # how to redirect to /docs
-  return RedirectResponse(url='/docs', status_code=302)
+  response = {"message": "Code-Runner Plugin Guide","discord":discord_url,"website":website_url,"github":github_url}
+  return response
 
 # Define a single method that reads the HTML content from a file and returns it as a response
 @app.get("/privacy")
@@ -778,7 +788,6 @@ def setup_database():
     write_log(str(e))
 
 # Run the app.
-# Will only work with python script.py
 if __name__ == "__main__":
   try:
     write_log("CodeRunner starting")

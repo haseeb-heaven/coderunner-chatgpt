@@ -92,6 +92,9 @@ For demo purpose i also created this in Quart framework. The files are located i
 ## Showcase - Demo of Plugin.</br>
 [![code_plugin_demo](https://img.youtube.com/vi/pcfAP3FEhMc/0.jpg)](https://youtube.com/shorts/pcfAP3FEhMc)</br>
 
+## Join Community.
+Join the community of Code-Runner on Discord [here](https://discord.gg/BCRUpv4d6H).
+
 ## Help
 To get help with Code Runner Plugin, use the following prompt in the chat box and press enter: </br>
 ![help](https://github.com/haseeb-heaven/CodeRunner-Plugin/blob/master/resources/coderunner_help_url.png?raw=true "")</br>
