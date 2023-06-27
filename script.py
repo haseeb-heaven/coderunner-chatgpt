@@ -34,12 +34,14 @@ from lib.python_runner import exec_python,execute_code
 
 # defining the allowed user agent and ip range.
 # Reference: https://platform.openai.com/docs/plugins/bot
-# Taken care by PluginsLab now.
+# Taken care by PluginLab now.
 """
 allowed_user_agent = "ChatGPT-User"
 allowed_ip_range = "23.98.142.176/28"
 restricted_endpoints = ['/run_code', '/save_code', '/upload', '/credit_limit']
 """
+
+# Webhook user agent by PluginLab.
 webhook_user_agent = "PluginLab-Webhook-Delivery"
 
 # defining the url's
@@ -90,25 +92,24 @@ request_var: ContextVar[Request] = ContextVar("request")
 # JDoodle language codes.
 # Credit - https://sl.bing.net/jbo456vZ8Eu
 lang_codes = {
-  'java': 'java',
   'c': 'c',
   'c++': 'cpp14',
   'cpp': 'cpp17',
-  'php': 'php',
-  'perl': 'perl',
   'python': 'python3',
-  'ruby': 'ruby',
-  'go': 'go',
+  'go lang': 'go',
   'scala': 'scala',
-  'bash': 'bash',
-  'sql': 'sql',
-  'pascal': 'pascal',
-  'csharp': 'csharp',
-  'vbnet': 'vbn',
-  'haskell': 'haskell',
+  'bash shell': 'bash',
+  'c#': 'csharp',
+  'vb.net': 'vbn',
   'objectivec': 'objc',
-  'swift': 'swift'
+  'swift': 'swift',
+  'r language': 'r',
+  'free basic': 'freebasic',
+  'nodejs': 'nodejs',
+  'java': 'java',
+  'javascript': 'nodejs',
 }
+
 
 # Method to write logs to a file.
 def write_log(log_msg:str):
