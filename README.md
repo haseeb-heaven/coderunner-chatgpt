@@ -7,8 +7,8 @@
 ## Introduction
 Check out my first awesome plugin for **ChatGPT** that lets you Run code in 70+ languages! 🙌👩‍💻👨‍💻 </br>
 This code will run this Plugin on your local machine with localhost:8000 as the URL. </br>
-If you want to use Hosted one then check The Website is hosted on [Vercel](https://code-runner-plugin.vercel.app/)</br>
-Checkout new designed website for [Code Runner](https://vercel-wxfx.b12sites.com) </br>
+If you want to use Hosted one then check The Website is hosted on [Vercel](https://code-runner.heavenplugins.com)</br>
+Checkout new designed website for [Code Runner]([https://vercel-wxfx.b12sites.co](https://code-runner-plugin.b12sites.com/)m) </br>
 
 ## Information
 💻 **Run And Save Code** in over 70 programming languages with ease! **Chat-GPT Code Runner** offers a *versatile* and *flexible* coding experience for developers of all levels.</br>
