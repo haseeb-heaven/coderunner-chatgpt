@@ -686,12 +686,6 @@ async def user_quota():
         write_log(f"user_quota: {e}")
         return {"message": f"An error occurred: {e}", "status": 400}
 
-@app.get("/logo.png", response_class=FileResponse)
-async def plugin_logo():
-    response = FileResponse(Path("logo.png"))
-    response.headers["Cache-Control"] = "public, max-age=31536000"
-    return response
-
 @app.get("/.well-known/ai-plugin.json", response_class=FileResponse)
 async def plugin_manifest():
     response = FileResponse(Path(".well-known/ai-plugin.json"))
@@ -762,24 +756,6 @@ def privacy_policy():
 @app.get("/")
 async def root():
     return RedirectResponse(url=website_url, status_code=302)
-
-@app.get("/robots.txt")
-async def read_robots():
-    try:
-        response = FileResponse('static/robots.txt', media_type='text/plain')
-        response.headers["Cache-Control"] = "public, max-age=31536000"
-        return response
-    except FileNotFoundError:
-        raise HTTPException(status_code=404, detail="File not found")
-
-@app.get("/favicon.ico")
-async def read_favicon():
-    try:
-        response = FileResponse('static/favicon.ico', media_type='image/vnd.microsoft.icon')
-        response.headers["Cache-Control"] = "public, max-age=31536000"
-        return response
-    except FileNotFoundError:
-        raise HTTPException(status_code=404, detail="File not found")
 
 def make_dirs():
   if not os.path.exists('codes'):
