@@ -692,12 +692,6 @@ async def plugin_manifest():
     response.headers["Cache-Control"] = "public, max-age=31536000"
     return response
 
-@app.get("/openapi.json", response_class=FileResponse)
-async def openapi_spec():
-    response = FileResponse(Path("openapi.json"))
-    response.headers["Cache-Control"] = "public, max-age=31536000"
-    return response
-
 # Docs for the plugin.
 @app.get("/docs", include_in_schema=False)
 async def plugin_docs():

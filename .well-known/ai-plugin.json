@@ -19,7 +19,7 @@
 		"type": "openapi",
 		"url": "https://code-runner.heavenplugins.com/.well-known/pluginlab/openapi.json"
 	},
-	"logo_url": "https://code-runner-plugin.vercel.app/public/logo.png",
+	"logo_url": "https://code-runner-plugin.vercel.app/logo.png",
 	"contact_email": "haseebmir.hm@gmail.com",
 	"legal_info_url": "https://code-runner-plugin.vercel.app/privacy"
 }
