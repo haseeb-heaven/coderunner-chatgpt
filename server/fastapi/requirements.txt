@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+starlette
+contextvars
+matplotlib
+pandas
+requests
+pymongo
+python-dotenv
+numpy
+jinja2

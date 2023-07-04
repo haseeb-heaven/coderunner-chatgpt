@@ -1,11 +1,5 @@
-fastapi
-uvicorn
-starlette
-contextvars
-matplotlib
-pandas
+quart
+quart-cors
 requests
-pymongo
-python-dotenv
-numpy
 jinja2
+pymongo
