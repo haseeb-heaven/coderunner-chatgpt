@@ -17,7 +17,6 @@ import quart
 import requests
 import os
 import gridfs
-from jinja2 import Environment, FileSystemLoader
 from pathlib import Path
 from lib.mongo_db import MongoDB
 from lib.python_runner import *
@@ -57,10 +56,6 @@ ORIGINS = [plugin_url, chatgpt_url]
 # Defining the app.
 app = Quart(__name__)
 app = cors(app, allow_origin=ORIGINS)
-
-@app.before_serving
-async def startup():
-    app.templates = Environment(loader=FileSystemLoader("static"))
 
 # Webhook user agent by PluginLab.
 webhook_user_agent = "PluginLab-Webhook-Delivery"

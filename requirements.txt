@@ -1,5 +1,12 @@
 quart
 quart-cors
 requests
-jinja2
+matplotlib
+pandas
+python-dotenv
+numpy
+scipy
 pymongo
+sklearn
+bs4
+plotly
