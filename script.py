@@ -263,7 +263,7 @@ async def save_code():
             return {"error": "Database not connected"}
 
         write_log(f"save_code: wrote code to file {filepath}")
-        download_link = request.base_url.rstrip('/') + url_for("download", filename=filename)
+        download_link = url_for("download", filename=filename, _external=True)
         write_log(f"save_code: download link is {download_link}")
 
         if download_link:
@@ -646,7 +646,7 @@ def setup_database():
 if __name__ == "__main__":
     try:
         write_log("CodeRunner starting")
-        app.run()
+        app.run(host="0.0.0.0", port=8000)
         write_log("CodeRunner started")
     except Exception as e:
         write_log(str(e))
