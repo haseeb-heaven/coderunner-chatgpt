@@ -12,6 +12,11 @@ from datetime import datetime, timezone
 from io import StringIO
 import io
 import traceback
+import random
+import os
+import requests
+import json
+import uvicorn
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse,StreamingResponse,RedirectResponse,JSONResponse,HTMLResponse
@@ -19,17 +24,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import get_swagger_ui_html
 import gridfs
 from jinja2 import Environment, FileSystemLoader
-import requests
-import json
-import uvicorn
 from pathlib import Path
 from starlette.requests import Request
 from contextvars import ContextVar
-import random
-import string
-import os
 from lib.mongo_db import MongoDB
-from lib.python_runner import exec_python,execute_code
+from lib.python_runner import *
+from lib.jdoodle_api import *
 
 # Webhook user agent by PluginLab.
 webhook_user_agent = "PluginLab-Webhook-Delivery"
@@ -37,7 +37,6 @@ webhook_user_agent = "PluginLab-Webhook-Delivery"
 # defining the url's
 plugin_url = "https://code-runner-plugin.vercel.app"
 chatgpt_url = "https://chat.openai.com"
-credit_spent_url = "https://api.jdoodle.com/v1/credit-spent"
 compiler_url = "https://api.jdoodle.com/v1/execute"
 website_url = "https://code-runner-plugin.b12sites.com/"
 discord_url = "https://discord.gg/BCRUpv4d6H"
@@ -86,27 +85,6 @@ app.add_middleware(
 # Credit - https://sl.bing.net/ib0YUGReKZg
 request_var: ContextVar[Request] = ContextVar("request")
 
-# JDoodle language codes.
-# Credit - https://sl.bing.net/jbo456vZ8Eu
-lang_codes = {
-  'c': 'c',
-  'c++': 'cpp14',
-  'cpp': 'cpp17',
-  'python': 'python3',
-  'go lang': 'go',
-  'scala': 'scala',
-  'bash shell': 'bash',
-  'c#': 'csharp',
-  'vb.net': 'vbn',
-  'objectivec': 'objc',
-  'swift': 'swift',
-  'r language': 'r',
-  'free basic': 'freebasic',
-  'nodejs': 'nodejs',
-  'java': 'java',
-  'javascript': 'nodejs',
-}
-
 
 # Method to write logs to a file.
 def write_log(log_msg:str):
@@ -114,68 +92,6 @@ def write_log(log_msg:str):
     print(str(datetime.now()) + " " + log_msg)
   except Exception as e:
     print(str(e))
-
-
-def generate_code_id(length=10):
-  try:
-    characters = string.ascii_letters + string.digits
-    unique_id = ''.join(random.choice(characters) for i in range(length))
-    return unique_id
-  except Exception as e:
-    write_log(e)
-    return ""
-
-# Method to get the JDoodle client ID and secret.
-def get_jdoodle_client_1():
-  client_id = '{}{}{}{}{}'.format('693e67ab', '032c', str(int('13')), 'c9',
-                                  '0ff01e3dca2c6' + str(int('117')))
-  client_secret = '{}{}{}{}{}{}{}{}'.format('c8870a78', '9a35e488', '2de3b383',
-                                            '789e0801', '1a1456e8', '8dc58892',
-                                            '61748d4b', '01d4a79d')
-  return client_id, client_secret
-
-
-def get_jdoodle_client_2():
-  client_id = '{}{}{}{}'.format('e0c1fdfe', '9506fe7e', '35186a25', '9e36e5f5')
-  client_secret = '{}{}{}{}{}{}'.format('e19a110c', '7ce8934c', '4f78017a',
-                                        'acb55073', 'e3a0670c',
-                                        'b871442dfcc40e28a40f66b3')
-  return client_id, client_secret
-
-# Method to get the JDoodle client.
-def get_jdoodle_client():
-  try:
-    index = 1
-    write_log(f"get_jdoodle_client: Getting jdoodle client {index}")
-    credits_used = get_credits_used()
-    if credits_used < 200:
-      write_log("get_jdoodle_client: return client_1")
-      return get_jdoodle_client_1()
-    else:
-      write_log("Credits exhaused for client_1")
-      write_log("get_jdoodle_client: return client_2")
-  except Exception as e:
-    write_log(f"get_jdoodle_client: {e}")
-    return get_jdoodle_client_2()
-
-
-# Method to call the JDoodle "credit-spent" API.
-def get_jdoodle_credit_spent():
-  try:
-    client_id, client_secret = get_jdoodle_client_1()
-    headers = {
-      'Content-Type': 'application/json',
-      'X-Requested-With': 'XMLHttpRequest',
-    }
-
-    body = {"clientId": client_id, "clientSecret": client_secret}
-    write_log(f"get_jdoodle_credit_spent: sending request with url {credit_spent_url}")
-    credit_spent = requests.post(credit_spent_url, headers=headers, data=json.dumps(body))
-    write_log(f"get_jdoodle_credit_spent: {credit_spent}")
-  except Exception as e:
-    write_log(f"get_jdoodle_credit_spent: {e}")
-  return credit_spent
-
 
 # Helper method to get the request.
 def get_request():
@@ -190,7 +106,6 @@ def set_request(request: Request):
     request_var.set(request)
   except Exception as e:
     write_log(f"set_request: {e}")
-
 
 @app.middleware("http")
 async def set_request_middleware(request: Request, call_next):
@@ -370,7 +285,7 @@ async def save_code():
     language = filename.split('.')[-1]
 
     if filename is None or code is None:
-      return {"error": "filename or code not provided"}, 400
+      return {"error": "filename or code not provided"}
 
     directory = 'codes'
     filepath = os.path.join(directory, filename)
@@ -679,6 +594,7 @@ async def user_quota():
         write_log(f"user_quota: {e}")
         return {"message": f"An error occurred: {e}", "status": 400}
 
+# Method for Plugin logo and manifest with 1-year cache. (31536000 = 1 year in seconds)
 @app.get("/logo.png", response_class=FileResponse)
 async def plugin_logo():
     response = FileResponse(Path("logo.png"))
@@ -708,25 +624,8 @@ async def plugin_docs():
   except Exception as e:
     write_log(f"plugin_docs: {e}")
 
-def get_credits_used():
-  try:
-    write_log("get_credits_used: called")
-    response = get_jdoodle_credit_spent()
-    credit_spent = response.json()
-    credits_used = 0
-    write_log(f"get_credits_used response : {credit_spent}")
-
-    if credit_spent:
-      credits_used = credit_spent['used']
-      write_log(f"get_credits_used Credits used: {credits_used}")
-
-    return credits_used
-  except Exception as e:
-    write_log("Exception in get_credits_used: " + str(e))
-
-
 @app.get('/credit_limit')
-def show_credits_spent():
+def credit_limit():
   try:
     credits_used = get_credits_used()
     return {"credits:": credits_used}
@@ -774,10 +673,6 @@ async def read_favicon():
         return response
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail="File not found")
-
-def make_dirs():
-  if not os.path.exists('codes'):
-    os.makedirs('codes')
 
 def setup_database():
   try:
