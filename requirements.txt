@@ -8,5 +8,4 @@ numpy
 scipy
 pymongo
 sklearn
-bs4
 plotly
