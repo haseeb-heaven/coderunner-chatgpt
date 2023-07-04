@@ -6,5 +6,4 @@ matplotlib
 pandas
 numpy
 pymongo
-sklearn
-plotly
+scikit-learn
