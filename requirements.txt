@@ -1,11 +1,10 @@
 quart
 quart-cors
+python-dotenv
 requests
 matplotlib
 pandas
-python-dotenv
 numpy
-scipy
 pymongo
 sklearn
 plotly
