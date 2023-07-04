@@ -1,11 +1,13 @@
+# libraries for web app
 fastapi
 uvicorn
 starlette
 contextvars
-matplotlib
-pandas
-requests
 pymongo
 python-dotenv
+
+# libraries for data analysis
+requests
+matplotlib
+pandas
 numpy
-jinja2

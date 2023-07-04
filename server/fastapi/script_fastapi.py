@@ -23,7 +23,6 @@ from fastapi.responses import FileResponse,StreamingResponse,RedirectResponse,JS
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import get_swagger_ui_html
 import gridfs
-from jinja2 import Environment, FileSystemLoader
 from pathlib import Path
 from starlette.requests import Request
 from contextvars import ContextVar
@@ -70,8 +69,6 @@ ORIGINS = [plugin_url ,chatgpt_url]
 app = FastAPI(openapi_url=None,docs_url="/docs")
 # Mount static files directory
 app.mount("/static", StaticFiles(directory="static"), name="static")
-
-templates = Environment(loader=FileSystemLoader("static"))
 
 app.add_middleware(
   CORSMiddleware,

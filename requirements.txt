@@ -1,8 +1,12 @@
+# libraries for web app
 quart
 quart-cors
 python-dotenv
+pymongo
+
+# libraries for data analysis
 requests
 matplotlib
 pandas
 numpy
-pymongo
+scipy
