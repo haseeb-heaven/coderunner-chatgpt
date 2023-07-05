@@ -227,11 +227,11 @@
         "schemas": {
             "Code": {
                 "type": "object",
-                "required": ["filename", "code"],
+                "required": ["language", "code"],
                 "properties": {
-                    "filename": {
+                    "language": {
                         "type": "string",
-                        "description": "The name of the file."
+                        "description": "The programming language code."
                     },
                     "code": {
                         "type": "string",
