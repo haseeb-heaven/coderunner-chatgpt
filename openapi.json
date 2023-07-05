@@ -2,7 +2,7 @@
     "openapi": "3.0.0",
     "info": {
         "title": "Code Runner",
-        "version": "1.2"
+        "version": "1.0"
     },
     "servers": [
         {
@@ -116,13 +116,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "credits": {
-                                            "type": "number",
-                                            "example": 100
-                                        }
-                                    }
+                                    "type": "object"
                                 }
                             }
                         }
@@ -165,29 +159,59 @@
         },
         "/quick_chart": {
             "post": {
-                "summary": "Generate a chart",
-                "operationId": "quickChart",
+                "summary": "Create a quick chart",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/ChartData"
+                                "type": "object",
+                                "required": ["chart_type", "labels", "datasets"],
+                                "properties": {
+                                    "chart_type": {
+                                        "type": "string",
+                                        "description": "The type of the chart."
+                                    },
+                                    "labels": {
+                                        "type": "string",
+                                        "description": "The labels for the chart."
+                                    },
+                                    "datasets": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "required": ["label", "data"],
+                                            "properties": {
+                                                "label": {
+                                                    "type": "string",
+                                                    "description": "The label for the dataset."
+                                                },
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "integer"
+                                                    },
+                                                    "description": "The data for the dataset."
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Chart generated",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "chart_link": {
-                                            "type": "string",
-                                            "example": "/download/chart.png"
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Chart created",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "chart_link": {
+                                                "type": "string",
+                                                "description": "The link to the created chart."
+                                            }
                                         }
                                     }
                                 }
@@ -200,85 +224,49 @@
     },
     "components": {
         "schemas": {
-            "FileData": {
+            "Code": {
                 "type": "object",
-                "required": [
-                    "filename",
-                    "data"
-                ],
+                "required": ["filename", "code"],
                 "properties": {
                     "filename": {
                         "type": "string",
-                        "example": "test.csv"
+                        "description": "The name of the file."
                     },
-                    "data": {
-                        "type": "string",
-                        "example": "this is some data"
-                    }
-                }
-            },
-            "Code": {
-                "type": "object",
-                "required": [
-                    "code",
-                    "language"
-                ],
-                "properties": {
                     "code": {
                         "type": "string",
-                        "example": "print('Hello, World!')"
-                    },
-                    "language": {
-                        "type": "string",
-                        "example": "python3"
-                    },
-                    "input": {
-                        "type": "string",
-                        "example": "50"
-                    },
-                    "compileOnly": {
-                        "type": "boolean",
-                        "example": false
+                        "description": "The code to be run."
                     }
                 }
             },
             "CodeFile": {
                 "type": "object",
-                "required": [
-                    "filename",
-                    "code"
-                ],
+                "required": ["filename", "code"],
                 "properties": {
                     "filename": {
                         "type": "string",
-                        "example": "hello_world.cpp"
+                        "description": "The name of the file."
                     },
                     "code": {
                         "type": "string",
-                        "example": "print('Hello, World!')"
+                        "description": "The code to be saved."
                     }
                 }
             },
-            "ChartData": {
+            "FileData": {
                 "type": "object",
-                "required": [
-                    "data",
-                    "type"
-                ],
+                "required": ["filename", "data"],
                 "properties": {
-                    "data": {
-                        "type": "array",
-                        "items": {
-                            "type": "number"
-                        },
-                        "example": [1, 2, 3, 4, 5]
-                    },
-                    "type": {
+                    "filename": {
                         "type": "string",
-                        "example": "line"
+                        "description": "The name of the file."
+                    },
+                    "data": {
+                        "type": "string",
+                        "description": "The data to be uploaded."
                     }
                 }
             }
         }
     }
 }
+
