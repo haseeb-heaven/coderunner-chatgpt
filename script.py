@@ -24,6 +24,8 @@ from lib.jdoodle_api import *
 from quart_cors import cors
 import io
 
+from lib.quick_chart import QuickChartIO
+
 
 # Webhook user agent by PluginLab.
 webhook_user_agent = "PluginLab-Webhook-Delivery"
@@ -43,10 +45,13 @@ plugin_name = "CodeRunner-Plugin"
 # setting the database.
 global database
 database = None
+global quick_chart
+quick_chart = None
 
 try:
     # setting the database
     database = MongoDB()
+    quick_chart = QuickChartIO(database)
 except Exception as e:
     print("Exception while connecting to the database : " + str(e))
 
@@ -89,35 +94,31 @@ def write_log(log_msg: str):
         print(str(e))
 
 # Define a method to save the plot in mongodb
-
-
-def save_plot(filename):
+def save_graph(filename):
     output = {}
     global database
-    write_log(f"save_plot: executed script")
+    write_log(f"save_graph: executed script")
 
     # Save the plot as an image file in a buffer
     buffer = io.BytesIO()
-    write_log(f"save_plot: saving plot")
+    write_log(f"save_graph: saving graph")
 
     # Using matplotlib to save the plot as an image file in a buffer
     import matplotlib.pyplot as plt
     plt.savefig(buffer, format='png')
-    write_log(f"save_plot: saved plot")
+    write_log(f"save_graph: saved graph")
 
     # Get the gridfs bucket object from the database object with the bucket name 'graphs'
     bucket = gridfs.GridFSBucket(database.db, bucket_name='graphs')
-    write_log(f"save_plot: got gridfs bucket object")
+    write_log(f"save_graph: got gridfs bucket object")
 
     # Store the image file in mongodb using the bucket object
     file_id = bucket.upload_from_stream(filename, buffer.getvalue())
-    write_log(f"save_plot: stored image file in mongodb")
+    write_log(f"save_graph: stored image file in mongodb")
     # Return the file id
     return output
 
 # Utility method for timestamp conversion.
-
-
 def timestamp_to_iso(ts):
     # ts is a timestamp in milliseconds
     # convert to seconds and create a UTC datetime object
@@ -126,8 +127,6 @@ def timestamp_to_iso(ts):
     return iso
 
 # Method to run the code.
-
-
 @app.route('/run_code', methods=['POST'])
 async def run_code():
     try:
@@ -159,8 +158,7 @@ async def run_code():
                         graph_file = f"graph_{random.randrange(1, 100000)}.png"
 
                         # replacing the line if it contains show() method
-                        script = "\n".join(
-                            [line for line in script.splitlines() if "show()" not in line])
+                        script = "\n".join([line for line in script.splitlines() if "show()" not in line])
 
                         response = execute_code(script)
                         write_log(f"run_code: executed python script")
@@ -168,11 +166,10 @@ async def run_code():
                         # Save the plot as an image file in a buffer
                         if contains_graph:
                             write_log(f"run_code: saving plot")
-                            response = save_plot(graph_file)
+                            response = save_graph(graph_file)
 
                         if response.__len__() == 0 and contains_graph:
-                            response = {
-                                "output": f"{plugin_url}/download/{graph_file}"}
+                            response = {"output": f"{plugin_url}/download/{graph_file}"}
                             response['support'] = support_message
                             response['extra_response_instructions'] = extra_response_instructions
                         else:
@@ -180,8 +177,7 @@ async def run_code():
 
                         # Return the response as JSON
                     else:
-                        write_log(
-                            f"run_code: running script locally no graphic libraries found")
+                        write_log(f"run_code: running script locally no graphic libraries found")
                         response = execute_code(script)
                         response = {"output": response}
 
@@ -250,8 +246,6 @@ async def run_code():
         return jsonify({"error": str(e)}), 500
 
 # Method to save the code.
-
-
 @app.route('/save_code', methods=['POST'])
 async def save_code():
     response = ""
@@ -299,8 +293,6 @@ async def save_code():
     return response
 
 # Create a route to save the file either document or image into database and return its url.
-
-
 @app.route('/upload', methods=['POST'])
 async def upload():
     try:
@@ -410,8 +402,6 @@ async def download(filename):
         return jsonify({"error": str(e)})
 
 # Route for user_create event.
-
-
 @app.route("/user_create", methods=["POST"])
 async def user_create():
     try:
@@ -455,8 +445,6 @@ async def user_create():
         return jsonify({"message": f"An error occurred: {e}", "status": 400})
 
 # Route for user_update event.
-
-
 @app.route("/user_update", methods=["POST"])
 async def user_update():
     try:
@@ -533,8 +521,6 @@ async def user_update():
         return jsonify({"message": f"An error occurred: {e}", "status": 400})
 
 # Route for user_quota event.
-
-
 @app.route("/user_quota", methods=["POST"])
 async def user_quota():
     try:
@@ -579,9 +565,51 @@ async def user_quota():
         write_log(f"user_quota: {e}")
         return jsonify({"message": f"An error occurred: {e}", "status": 400})
 
+# Define a route for the create_quickchart endpoint with POST method
+@app.route("/quick_chart", methods=["POST"])
+async def create_quickchart():
+    try:
+        global database
+        global quick_chart
+        # Get the JSON data from the request body
+        data = await request.get_json()
+        write_log(f"quick_chart: data is {data}")
+        
+        # Extract the chart type, labels and datasets from the data
+        chart_type = data.get("chart_type")
+        labels = data.get("labels").split(",")
+        datasets = data.get("datasets")
+
+        # Create a data dictionary for the chart
+        chart_data = {
+            "labels": labels,
+            "datasets": datasets
+        }
+
+        # Create an instance of the QuickChartIO class with the base URL and the logger
+        if not quick_chart:
+            quick_chart = QuickChartIO(database)
+
+        write_log(f"quick_chart: chart_type is {chart_type}")
+        
+        # Call the generate_chart method with the chart type and the chart data
+        graph_file = quick_chart.generate_chart(chart_type, chart_data)
+
+        write_log(f"quick_chart: generated chart successfully")
+        download_link = quick_chart.download_link(graph_file)
+        response = {"download_link": download_link}
+        response['status'] = 200
+        response['message'] = "Chart generated successfully"
+        response['chart_type'] = chart_type
+        response['support'] = support_message
+        
+        # Return the download link of the chart as a response
+        return jsonify(response)
+    except Exception as e:
+        write_log(f"An error occurred: {e}")
+        return jsonify({"message": f"An error occurred: {e}", "status": 400})
+
 # Route for Plugin logo and manifest with 1-year cache. (31536000 = 1 year in seconds)
-
-
 @app.route("/logo.png", methods=["GET"])
 async def plugin_logo():
     try:
@@ -615,8 +643,6 @@ async def openapi_spec():
         return jsonify({"message": f"An error occurred: {e}", "status": 400})
 
 # Docs for the plugin.
-
-
 @app.route("/docs", methods=["GET"])
 async def plugin_docs():
     try:
@@ -635,8 +661,6 @@ async def credit_limit():
         return jsonify({"error": str(e)}), 500
 
 # Route for displaying help message
-
-
 @app.route('/help', methods=["GET"])
 async def help():
     try:
@@ -649,8 +673,6 @@ async def help():
         return jsonify({"message": f"An error occurred: {e}", "status": 400})
 
 # Define a single method that reads the HTML content from a file and returns it as a response
-
-
 @app.route("/privacy", methods=["GET"])
 async def privacy_policy():
     try:
@@ -705,7 +727,7 @@ def setup_database():
 if __name__ == "__main__":
     try:
         write_log("CodeRunner starting")
-        app.run()
+        app.run(debug=False, host="0.0.0.0",port=8000)
         write_log("CodeRunner started")
     except Exception as e:
         write_log(str(e))

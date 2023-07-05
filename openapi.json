@@ -2,7 +2,7 @@
     "openapi": "3.0.0",
     "info": {
         "title": "Code Runner",
-        "version": "1.0"
+        "version": "1.2"
     },
     "servers": [
         {
@@ -116,7 +116,13 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object"
+                                    "type": "object",
+                                    "properties": {
+                                        "credits": {
+                                            "type": "number",
+                                            "example": 100
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -148,6 +154,40 @@
                                     "properties": {
                                         "download_link": {
                                             "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/quick_chart": {
+            "post": {
+                "summary": "Generate a chart",
+                "operationId": "quickChart",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ChartData"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Chart generated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "chart_link": {
+                                            "type": "string",
+                                            "example": "/download/chart.png"
                                         }
                                     }
                                 }
@@ -216,6 +256,26 @@
                     "code": {
                         "type": "string",
                         "example": "print('Hello, World!')"
+                    }
+                }
+            },
+            "ChartData": {
+                "type": "object",
+                "required": [
+                    "data",
+                    "type"
+                ],
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "number"
+                        },
+                        "example": [1, 2, 3, 4, 5]
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "line"
                     }
                 }
             }
