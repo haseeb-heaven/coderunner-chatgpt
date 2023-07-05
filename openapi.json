@@ -160,6 +160,7 @@
         "/quick_chart": {
             "post": {
                 "summary": "Create a quick chart",
+                "operationId": "quickChart",
                 "requestBody": {
                     "required": true,
                     "content": {
