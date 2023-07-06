@@ -94,7 +94,12 @@ def write_log(log_msg: str):
 
 # Method to generate TinyURL links.
 def generate_tinyurl(url: str):
-    return requests.get("http://tinyurl.com/api-create.php?url=" + url).text
+    response = ""
+    try:
+        response = requests.get("http://tinyurl.com/api-create.php?url=" + url).text
+    except Exception as e:
+        write_log("Exception while generating tinyurl : " + str(e))
+    return response
 
 # Define a method to save the plot in mongodb
 def save_graph(filename):
@@ -617,10 +622,12 @@ async def create_quickchart():
         
         # Call the generate_chart method with the chart type and the chart data
         graph_file = quick_chart.generate_chart(chart_type, chart_data)
-
         write_log(f"quick_chart: generated chart successfully")
+        
         download_link = quick_chart.download_link(graph_file)
-        download_link = generate_tinyurl(download_link)
+        #download_link = generate_tinyurl(download_link)
+        
+        # Return a success message and status code
         response = {"link": download_link}
         response['status'] = 200
         response['message'] = "Chart generated successfully"
