@@ -43,7 +43,7 @@ class QuickChartIO:
             return file_name
 
     def download_link(self,graph_file: str):
-        response = {"output": f"{self.plugin_url}/download/{graph_file}"}
+        response = f"{self.plugin_url}/download/{graph_file}"
         return response
     
     # Method to write logs to a file.

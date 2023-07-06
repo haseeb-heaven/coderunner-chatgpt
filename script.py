@@ -420,8 +420,7 @@ async def download(filename):
                     return jsonify({"error": "File not found"})
 
             else:
-                write_log(
-                    f"download: failed to get code by filename {filename}")
+                write_log(f"download: failed to get code by filename {filename}")
                 # handle the case when the file is not found
                 return jsonify({"error": "File not found"})
             return response
