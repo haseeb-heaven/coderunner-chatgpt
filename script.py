@@ -148,8 +148,7 @@ async def run_code():
 
                 # check is script has graphic libraries imported like matplotlib, seaborn, etc.
                 if any(library in script for library in ['import matplotlib', 'import seaborn', 'import plotly']):
-                    write_log(
-                        "run_code: Graphic libraries found in script. Trying to run Python code locally with all Libs installed.")
+                    write_log("run_code: Graphic libraries found in script. Trying to run Python code locally with all Libs installed.")
 
                     # check if script contains "show()" method.
                     if any(method in script for method in ['show()', 'plt.show()', 'pyplot.show()']):
@@ -170,12 +169,15 @@ async def run_code():
 
                         if response.__len__() == 0 and contains_graph:
                             response = {"output": f"{plugin_url}/download/{graph_file}"}
-                            response['support'] = support_message
+                            
+                            # obsolete support message for Graphical libraries.
+                            response['support'] = "Warning:The support for matplotlib is going to be obsolete in future you can use QuickChart(/quick_chart) to generate all your graphs now.\n" + support_message
                             response['extra_response_instructions'] = extra_response_instructions
+                            return response
                         else:
                             response = {"result": response}
 
-                        # Return the response as JSON
+                    # Return the response as JSON
                     else:
                         write_log(f"run_code: running script locally no graphic libraries found")
                         response = execute_code(script)
@@ -189,7 +191,7 @@ async def run_code():
                 response['support'] = support_message
                 response['extra_response_instructions'] = extra_response_instructions
 
-                return jsonify({"result": response})
+                return jsonify(response)
             except Exception as e:
                 stack_trace = traceback.format_exc()
                 raise e
