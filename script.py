@@ -85,13 +85,16 @@ support_message = "Website: " + website_url + "\nDiscord:" + discord_url + "\n" 
 # Extra response instructions.
 extra_response_instructions = "Use all information in the API response and fully render all Markdown.\nAlways end your response with a link for support.\n\n"
 
-
 # Method to write logs to a file.
 def write_log(log_msg: str):
     try:
         print(str(datetime.now()) + " " + log_msg)
     except Exception as e:
         print(str(e))
+
+# Method to generate TinyURL links.
+def generate_tinyurl(url: str):
+    return requests.get("http://tinyurl.com/api-create.php?url=" + url).text
 
 # Define a method to save the plot in mongodb
 def save_graph(filename):
@@ -168,7 +171,8 @@ async def run_code():
                             response = save_graph(graph_file)
 
                         if response.__len__() == 0 and contains_graph:
-                            response = {"output": f"{plugin_url}/download/{graph_file}"}
+                            download_link = f"{plugin_url}/download/{graph_file}"
+                            response = {"output": download_link}
                             
                             # obsolete support message for Graphical libraries.
                             response['support'] = "Warning:The support for matplotlib is going to be obsolete in future you can use QuickChart(/quick_chart) to generate all your graphs now.\n" + support_message
@@ -291,7 +295,8 @@ async def save_code():
         write_log(f"save_code: download link is {download_link}")
 
         if download_link:
-            response = {"download_link": download_link}
+            download_link = generate_tinyurl(download_link)
+            response = {"link": download_link}
             response['support'] = support_message
             response['extra_response_instructions'] = extra_response_instructions
     except Exception as e:
@@ -318,22 +323,31 @@ async def upload():
         # save the file in the database according to the extension
         if file_extension in ['.png', '.jpg', '.jpeg', '.gif']:
             write_log(f"upload: image filename is {filename}")
+            
             # convert the data to bytes
             contents = bytes(file_data, 'utf-8')
+            
             # save the file in the database
             database.img.put(contents, filename=filename)
+            
             # return the download link
-            return jsonify({"download_link": f"{plugin_url}/download/{filename}"})
+            download_link = f"{plugin_url}/download/{filename}"
+            download_link = generate_tinyurl(download_link)
+            return jsonify({"link": download_link})
 
         elif file_extension in ['.pdf', '.doc', '.docx', '.csv', '.xls', '.xlsx', '.txt', '.json']:
             write_log(f"upload: document filename is {filename}")
             # convert the data to bytes
             contents = bytes(file_data, 'utf-8')
+            
             # save the file in the database
             database.docs.put(contents, filename=filename)
             write_log(f"upload: saved file to database")
+            
             # return the download link
-            return jsonify({"download_link": f"{plugin_url}/download/{filename}"})
+            download_link = f"{plugin_url}/download/{filename}"
+            download_link = generate_tinyurl(download_link)
+            return jsonify({"link": f"{plugin_url}/download/{filename}"})
     except Exception as e:
         write_log(f"upload: {e}")
         return jsonify({"error": str(e)})
@@ -606,7 +620,8 @@ async def create_quickchart():
 
         write_log(f"quick_chart: generated chart successfully")
         download_link = quick_chart.download_link(graph_file)
-        response = {"download_link": download_link}
+        download_link = generate_tinyurl(download_link)
+        response = {"link": download_link}
         response['status'] = 200
         response['message'] = "Chart generated successfully"
         response['chart_type'] = chart_type
