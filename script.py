@@ -181,7 +181,7 @@ async def run_code():
                             
                             # obsolete support message for Graphical libraries.
                             response['support'] = "Warning:The support for matplotlib is going to be obsolete in future you can use QuickChart(/quick_chart) to generate all your graphs now.\n" + support_message
-                            response['extra_response_instructions'] = extra_response_instructions
+                            response['extra_response_instructions'] = extra_response_instructions + "\nFor Output graph use markdown to display it then dont use codeblock now use image tag to display it.\n\n" + "Example:\n" + "![Graph](" + download_link + ")"
                             return response
                         else:
                             response = {"result": response}
@@ -632,6 +632,7 @@ async def create_quickchart():
         response['message'] = "Chart generated successfully"
         response['chart_type'] = chart_type
         response['support'] = support_message
+        response['extra_response_instructions'] = extra_response_instructions + "\nFor Output graph use markdown to display it then dont use codeblock now use image tag to display it.\n\n" + "Example:\n" + "![Graph](" + download_link + ")"
         
         # Return the download link of the chart as a response
         return jsonify(response)
