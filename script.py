@@ -243,7 +243,11 @@ async def run_code():
 
         return jsonify(response)
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        error = {"error": str(e)}
+        # check if the error contains "No such file or directory"
+        if "No such file or directory" in str(e):
+            error = {"error": str(e) + "\nNote:Server is read-only system" + "\nSo you need to upload the file to CodeRunner first and then access its data via requests library via URL."}
+        return jsonify(error), 500
 
 # Method to save the code.
 @app.route('/save_code', methods=['POST'])
