@@ -131,9 +131,9 @@ def timestamp_to_iso(ts):
 async def run_code():
     try:
         data = await request.json
+        write_log(f"run_code: data is {data}")
         script = data.get('code')
         language = data.get('language')
-        write_log(f"run_code: data is {data}")
 
         # Convert the language to the JDoodle language code.
         language_code = lang_codes.get(language, language)

@@ -227,7 +227,7 @@
         "schemas": {
             "Code": {
                 "type": "object",
-                "required": ["language", "code"],
+                "required": ["code","language"],
                 "properties": {
                     "language": {
                         "type": "string",
