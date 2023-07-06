@@ -352,8 +352,7 @@ async def download(filename):
                 response.headers["Content-Disposition"] = f"attachment; filename={filename}"
                 return response
             else:
-                write_log(
-                    f"download: failed to get file by filename {filename}")
+                write_log(f"download: failed to get file by filename {filename}")
                 # handle the case when the file is not found
                 return jsonify({"error": "File not found"})
 
@@ -369,6 +368,11 @@ async def download(filename):
                 # set the content-disposition header to indicate a file download
                 response.headers["Content-Disposition"] = f"attachment; filename={filename}"
                 return response
+            else:
+                write_log(
+                    f"download: failed to get file by filename {filename}")
+                # handle the case when the file is not found
+                return jsonify({"error": "File not found"})
 
         else:
             write_log(f"download: code filename is {filename}")
@@ -386,8 +390,7 @@ async def download(filename):
                     response.headers["Content-Disposition"] = f"attachment; filename={filename}"
                     return response
                 else:
-                    write_log(
-                        f"download: failed to get code by filename {filename}")
+                    write_log(f"download: failed to get code by filename {filename}")
                     # handle the case when the file is not found
                     return jsonify({"error": "File not found"})
 
