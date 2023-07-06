@@ -627,7 +627,7 @@ async def create_quickchart():
         #download_link = generate_tinyurl(download_link)
         
         # Return a success message and status code
-        response = {"link": download_link}
+        response = {"output": download_link}
         response['status'] = 200
         response['message'] = "Chart generated successfully"
         response['chart_type'] = chart_type
