@@ -229,13 +229,13 @@
                 "type": "object",
                 "required": ["code","language"],
                 "properties": {
-                    "language": {
-                        "type": "string",
-                        "description": "The programming language code."
-                    },
                     "code": {
                         "type": "string",
                         "description": "The code to be run."
+                    },
+                    "language": {
+                        "type": "string",
+                        "description": "The programming language code."
                     }
                 }
             },
