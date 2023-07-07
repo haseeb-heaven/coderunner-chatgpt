@@ -696,7 +696,17 @@ async def credit_limit():
 async def help():
     try:
         write_log("help: Displayed for Plugin Guide")
-        message = support_message.split("\n")
+        basic_prompts = f"{plugin_url}/download/code_runner_basic_prompts.txt"
+        graph_prompts = f"{plugin_url}/download/code_runner_graph_prompts.txt"
+        code_interpreter_prompts = f"{plugin_url}/download/code_runner_interpreter_prompts.txt"
+        
+        message = f"**Code Runner Plugin Guide**\n\n" + \
+        f"**Basic Prompts**\n\n" + basic_prompts + "\n\n" + \
+        f"**Graph Prompts**\n\n" + graph_prompts + "\n\n" + \
+        f"**Code Interpreter Prompts**\n\n" + code_interpreter_prompts + "\n\n" + \
+        f"**Youtube Video**\n\n" + "https://www.youtube.com/watch?v=Ahko7E2S1R8" + "\n\n" + \
+        f"**Support**\n\n" + "\n".join(support_message.split("\n")) + "\n\n"
+        
         response = {"message": message}
         return jsonify(response)
     except Exception as e:
