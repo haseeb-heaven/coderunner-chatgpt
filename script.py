@@ -154,6 +154,14 @@ async def run_code():
                 graph_file = ""
                 contains_graph = False
 
+                # check if script imports requests library
+                if script.find("import requests") != -1:
+                    write_log("run_code: Requests library found in script. Trying to restrict access to external resources.")
+                    if "code-runner-plugin" not in script:
+                        write_log("run_code: Requests library found in script blocking execution.")
+                        error_msg = {"error": "Access to external resources is restricted\nYou can only access whitelisted resources like code-runner-plugin, openai, etc."}
+                        return jsonify(error_msg)
+                
                 # check is script has graphic libraries imported like matplotlib, seaborn, etc.
                 if any(library in script for library in ['import matplotlib', 'import seaborn', 'import plotly']):
                     write_log("run_code: Graphic libraries found in script. Trying to run Python code locally with all Libs installed.")
