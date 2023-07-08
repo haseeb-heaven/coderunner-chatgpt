@@ -155,7 +155,7 @@ async def run_code():
                 contains_graph = False
 
                 # check if script imports requests library - Restrict access to external resources.
-                if any(library in script for library in ['import requests', 'import pandas']):
+                if any(library in script for library in ['import requests', 'import pandas','import urllib.request','import urllib']):
                     write_log("run_code: Requests library found in script. Trying to restrict access to external resources.")
                     if "code-runner-plugin" not in script:
                         write_log("run_code: Requests library found in script blocking execution.")
