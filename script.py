@@ -249,8 +249,7 @@ async def run_code():
             for k, v in body.items() if k not in ['clientId', 'clientSecret']
         }
 
-        response_data = requests.post(
-            compiler_url, headers=headers, data=json.dumps(body))
+        response_data = requests.post(compiler_url, headers=headers, data=json.dumps(body))
         response = json.loads(response_data.content.decode('utf-8'))
 
         # Append the discord and github URLs to the response.

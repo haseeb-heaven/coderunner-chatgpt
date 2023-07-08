@@ -5,6 +5,7 @@ python-dotenv
 pymongo
 
 # libraries for data analysis
+requests
 matplotlib
 pandas
 numpy
