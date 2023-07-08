@@ -2,8 +2,10 @@
 ![cover_logo](https://github.com/haseeb-heaven/CodeRunner-Plugin/blob/master/resources/logo.png?raw=true "")</br>
 [![Plugin](https://img.shields.io/badge/Code%20Runner-Plugin-blue)](https://code-runner-plugin.vercel.app/)
 [![Plugin - Manifest](https://img.shields.io/badge/Code%20Runner-Manifest-blue)](https://code-runner-plugin.vercel.app/.well-known/ai-plugin.json)
-[![Plugin](https://img.shields.io/badge/Code%20Runner-Hosted-blue)](https://code-runner-plugin.vercel.app)</br>
-- **Support this Project** <a href="https://www.buymeacoffee.com/haseebheaven"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=haseebheaven&button_colour=40DCA5&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00" /></a>
+[![Plugin](https://img.shields.io/badge/Paypal-Support-blue)]([https://code-runner-plugin.vercel.app](https://www.paypal.com/paypalme/EpicProTeam?country.x=IN&locale.x=en_GB))</br>
+<a href="https://www.buymeacoffee.com/haseebheaven"><img src="https://img.buymeacoffee.com/button-api/?text=Support Code Runner&emoji=&slug=haseebheaven&button_colour=40DCA5&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00" /></a>
+
+
 ## Introduction
 Check out my first awesome plugin for **ChatGPT** that lets you Run code in 70+ languages! 🙌👩‍💻👨‍💻 </br>
 This code will run this Plugin on your local machine with localhost:8000 as the URL. </br>
@@ -18,6 +20,12 @@ Ready to supercharge your coding experience? Check out Code Runner Plugin, the u
 This uses JDoodle compiler API to execute your code and provide you with the output.
 Checkout JDoole API [here](https://www.jdoodle.com/compiler-api/).
 The API Keys are embeded in the code and you get _200_ free API calls per day. Make sure to call Get Credits Spend API to check your remaining credits.
+
+# Version and Update.
+The current version is *Code Runner 1.2* and important notice.
+### UPDATE:
+- **No Internet Access:** For **privacy** and **security** reasons, the **Python** environment does not have internet access. This means that **Python** libraries that require internet access to fetch data (like requests) won't work in this environment.
+- **Framwork updated:** For this version we have migrated to the *Quart* framework because of limitation of size on *Vercel Serverless functions*.
 
 # Installation.
 To install the required packages for this plugin, run the following command:
@@ -90,7 +98,7 @@ For demo purpose i also created this in Quart framework. The files are located i
 - Quart Main: `server/main_quart.py`
 
 ## Showcase - Demo of Plugin.</br>
-[![code_plugin_demo](https://img.youtube.com/vi/pcfAP3FEhMc/0.jpg)](https://youtube.com/shorts/pcfAP3FEhMc)</br>
+[![code_plugin_demo](https://img.youtube.com/vi/Ahko7E2S1R8/0.jpg)](https://youtube.com/Ahko7E2S1R8)</br>
 
 ## Join Community.
 Join the community of Code-Runner on Discord [here](https://discord.gg/BCRUpv4d6H).
