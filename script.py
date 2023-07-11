@@ -26,7 +26,6 @@ import io
 
 from lib.quick_chart import QuickChartIO
 
-
 # Webhook user agent by PluginLab.
 webhook_user_agent = "PluginLab-Webhook-Delivery"
 
@@ -84,6 +83,24 @@ support_message = "Website: " + website_url + "\nDiscord:" + discord_url + "\n" 
 
 # Extra response instructions.
 extra_response_instructions = "Use all information in the API response and fully render all Markdown.\nAlways end your response with a link for support.\n\n"
+
+# Defining premium user.
+is_user_premium = False
+
+# Method to generate the error message.
+def premium_feature_error_message():
+    response = {
+        "error": {
+            "status": 403,
+            "message": "This feature is now part of the premium plan.",
+            "solution": "Please upgrade to the premium plan by using the Support link."
+        }
+    }
+
+    response['support'] = support_message
+    response['extra_response_instructions'] = extra_response_instructions
+
+    return response
 
 # Method to write logs to a file.
 def write_log(log_msg: str):
@@ -184,6 +201,11 @@ async def run_code():
                             response = save_graph(graph_file)
 
                         if response.__len__() == 0 and contains_graph:
+                            
+                            # Return the premium error message if the user is not premium
+                            if not is_user_premium:
+                                return premium_feature_error_message()
+        
                             download_link = f"{plugin_url}/download/{graph_file}"
                             response = {"output": download_link}
                             
@@ -274,6 +296,7 @@ async def save_code():
     try:
         global database
         write_log(f"save_code: database is {database}")
+        
         # check if database is connected
         if database is None:
             write_log(f"save_code: database is not connected")
@@ -319,6 +342,11 @@ async def save_code():
 @app.route('/upload', methods=['POST'])
 async def upload():
     try:
+        
+        # Return the premium error message if the user is not premium
+        if not is_user_premium:
+            return premium_feature_error_message()
+        
         global database
         # get the request data
         data = await request.get_json()
@@ -605,9 +633,14 @@ async def create_quickchart():
     try:
         global database
         global quick_chart
+        
         # Get the JSON data from the request body
         data = await request.get_json()
         write_log(f"quick_chart: data is {data}")
+        
+        # Return the premium error message if the user is not premium
+        if not is_user_premium:
+            return premium_feature_error_message()
         
         # Extract the chart type, labels and datasets from the data
         chart_type = data.get("chart_type")
