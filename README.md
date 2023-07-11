@@ -22,7 +22,23 @@ Checkout JDoole API [here](https://www.jdoodle.com/compiler-api/).
 The API Keys are embeded in the code and you get _200_ free API calls per day. Make sure to call Get Credits Spend API to check your remaining credits.
 
 # Version and Update.
-The current version is *Code Runner 1.2* and important notice.
+The current version is *Code Runner 1.3* and important notice.
+### UPDATE:
+
+**Upload** documents and **Generating Graphs** are now part of the **Premium Plan**. 
+
+To unlock these features, please upgrade to the **Premium Plan**.
+
+[Upgrade Here](https://www.paypal.com/paypalme/EpicProTeam)</br>
+[Support Here](https://www.buymeacoffee.com/haseebheaven)
+
+For questions:
+
+- Discord: [Discord](https://discord.gg/BCRUpv4d6H)
+- Github: [Github](https://github.com/haseeb-heaven/CodeRunner-Plugin)
+
+Thank you for your support!
+
 ### UPDATE:
 - **No Internet Access:** For **privacy** and **security** reasons, the **Python** environment does not have internet access. This means that **Python** libraries that require internet access to fetch data (like requests) won't work in this environment.
 - **Framwork updated:** For this version we have migrated to the *Quart* framework because of limitation of size on *Vercel Serverless functions*.
