@@ -25,6 +25,7 @@ from quart_cors import cors
 import io
 from lib.quick_chart import QuickChartIO
 from lib.Carbonara import Carbonara
+from lib.Kod import Kodso
 
 # Webhook user agent by PluginLab.
 webhook_user_agent = "PluginLab-Webhook-Delivery"
@@ -53,6 +54,7 @@ try:
     database = MongoDB()
     quick_chart = QuickChartIO(database)
     carbonara = Carbonara(database)
+    kodso = Kodso(database)
 except Exception as e:
     print("Exception while connecting to the database : " + str(e))
 
@@ -477,11 +479,14 @@ async def download(filename):
         return jsonify({"error": str(e)})
 
 # Route for generating code snippets.
+import time
+
 @app.route('/save_snippet', methods=['POST'])
 async def save_snippet():
     response = {}
     try:
-        global carbonara
+        global kodso
+        start_time = time.time() # start the timer
         # Parse the JSON request body
         data = await request.get_json()
         
@@ -494,22 +499,25 @@ async def save_snippet():
         
         if not language or not theme:
             language = "python"
-            theme = "Night Owl"
+            theme = "Nord"
         
         write_log("save_snippet: parameters extracted")
         
-        if carbonara:
+        if kodso:
             # Generate and save the image
-            download_link = carbonara.save_snippet(code, theme=theme, language=language)
+            download_link = kodso.save_snippet(code, theme=theme, language=language)
         else:
             return jsonify({"error": "Carbonara is not defined"})
-        
+                
         # return the download link
         if download_link:
             #download_link = generate_tinyurl(download_link)
             response = {"link": download_link}
             response['support'] = support_message
             response['extra_response_instructions'] = extra_response_instructions
+        
+        elapsed_time = time.time() - start_time # calculate the elapsed time
+        write_log(f"save_snippet: elapsed time is {elapsed_time} seconds")
             
     except Exception as e:
         write_log(f"save_snippet: {e}")
