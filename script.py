@@ -861,7 +861,7 @@ def setup_database():
 if __name__ == "__main__":
     try:
         write_log("CodeRunner starting")
-        app.run(debug=True,port=8000,reload=True)
+        app.run()
         write_log("CodeRunner started")
     except Exception as e:
         write_log(str(e))

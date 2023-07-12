@@ -61,28 +61,31 @@ class Carbonara:
         :return: The image data that can be used to create an image of the source code.
     """
         
-    def generate_image(self, code: str, **kwargs):
+    def generate_snippet(self, code: str, **kwargs):
         try:
-            self.write_log(f"generate_image method with code and kwargs: {kwargs}")
+            self.write_log(f"generate_snippet: method with code and kwargs: {kwargs}")
             # Update the default parameters with any additional parameters provided by the user
             self.params.update(kwargs)
             
             # Add the code parameter
             self.params["code"] = code
             
+            self.write_log(f"generate_snippet: starting request to carbonara API")
+            
             # Send the request to the carbonara API
             response = requests.post(self.api_url, headers=self.headers, data=json.dumps(self.params))
+            self.write_log(f"generate_snippet: request to carbonara API completed")
             
             # Check if the request was successful
             if response.status_code == 200:
                 # Return the image data
-                self.write_log(f"generate_image method successful")
+                self.write_log(f"generate_snippet: method successful")
                 return response.content
             else:
-                self.write_log(f"An error occurred while generating the image: {response.text}")
+                self.write_log(f"generate_snippet: An error occurred while generating the image: {response.text}")
                 return jsonify({"output": "An error occurred while generating the image."})
         except Exception as e:
-            self.write_log(f"An error occurred while generating the image: {e}")
+            self.write_log(f"generate_snippet: An error occurred while generating the image: {e}")
         return jsonify({"output": "An error occurred while generating the image."})
 
     """
@@ -93,15 +96,15 @@ class Carbonara:
     """
     def save_snippet(self, code: str, **kwargs):
         try:
-            self.write_log(f"save_image method with code and kwargs: {kwargs}")
+            self.write_log(f"save_snippet: method with code and kwargs: {kwargs}")
             # Generate a random filename for the image
             filename = f"snippet_{random.randint(1, 10000)}.png"
             
             # Generate the image data
-            image_data = self.generate_image(code, **kwargs)
+            image_data = self.generate_snippet(code, **kwargs)
             
             if not image_data:
-                self.write_log(f"save_image method failed to generate image")
+                self.write_log(f"save_snippet: method failed to generate image")
                 return {"output": "An error occurred while generating the image."}
             
             # Get the gridfs bucket object from the database object with the bucket name 'Snippets'
@@ -111,7 +114,7 @@ class Carbonara:
             file_id = bucket.upload_from_stream(filename, image_data)
             
             if file_id:
-                self.write_log("save_image Image saved to database successfully.")
+                self.write_log("save_snippet: Image saved to database successfully.")
                 # Return the download link for the image.
                 download_link = f"{self.plugin_url}/download/{filename}"
                 return download_link
