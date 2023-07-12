@@ -25,12 +25,13 @@ The API Keys are embeded in the code and you get _200_ free API calls per day. M
 The current version is *Code Runner 1.3* and important notice.
 ### UPDATE:
 
-**Upload** documents and **Generating Graphs** are now part of the **Premium Plan**. 
+New **Free Plans** and **Premium Plan** are available for **Code Runner**. This plan includes the following features:</br>
+![plugin_pricing](https://github.com/haseeb-heaven/CodeRunner-Plugin/blob/server/resources/code-runner-pricing.png?raw=true "")</br>
 
-To unlock these features, please upgrade to the **Premium Plan**.
+To unlock these features, checkout the below links:</br>
 
-[Upgrade Here](https://www.paypal.com/paypalme/EpicProTeam)</br>
-[Support Here](https://www.buymeacoffee.com/haseebheaven)
+[Pricing Plans](https://code-runner-plugin.b12sites.com/pricing)</br>
+[Support](https://www.paypal.com/paypalme/EpicProTeam)</br>
 
 For questions:
 
