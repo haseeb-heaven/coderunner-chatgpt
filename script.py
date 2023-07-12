@@ -85,7 +85,7 @@ support_message = "Website: " + website_url + "\nDiscord:" + discord_url + "\n" 
 extra_response_instructions = "Use all information in the API response and fully render all Markdown.\nAlways end your response with a link for support.\n\n"
 
 # Defining premium user.
-is_user_premium = False
+is_user_premium = True # Approved by OpenAI now we can use it.
 
 # Method to generate the error message.
 def premium_feature_error_message():
