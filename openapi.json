@@ -311,7 +311,9 @@
                     },
                     "theme": {
                         "type": "string",
-                        "description": "The color theme of the code snippet."
+                        "description": "The color theme of the code snippet.",
+                        "example": "Monokai",
+                        "message": "Available themes to pick from: 3024 Night, A11y Dark, Blackboard, Base 16 (Dark), Cobalt, Duotone, Hopscotch, Lucario, Material, Monokai, Night Owl, Nord, Oceanic Next, One Light, Panda Syntax, Paraiso Dark, Seti, Shades of Purple, Solarized Dark, Solarized Light, SynthWave '84, Twilight, Verminal, VSCode, Yeti, Zenburn. If not provided, a random theme will be selected."
                     },
                     "language": {
                         "type": "string",

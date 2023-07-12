@@ -500,7 +500,7 @@ async def save_snippet():
         
         if carbonara:
             # Generate and save the image
-            download_link = carbonara.save_image(code, theme=theme, language=language)
+            download_link = carbonara.save_snippet(code, theme=theme, language=language)
         else:
             return jsonify({"error": "Carbonara is not defined"})
         

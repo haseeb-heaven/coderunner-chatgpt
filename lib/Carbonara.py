@@ -8,6 +8,7 @@ Github : https://github.com/petersolopov/carbonara
 """
 
 from datetime import datetime
+from quart import jsonify
 import requests
 import json
 import gridfs
@@ -62,7 +63,7 @@ class Carbonara:
         
     def generate_image(self, code: str, **kwargs):
         try:
-            self.write_log(f"generate_image method with code: {code} and kwargs: {kwargs}")
+            self.write_log(f"generate_image method with code and kwargs: {kwargs}")
             # Update the default parameters with any additional parameters provided by the user
             self.params.update(kwargs)
             
@@ -79,9 +80,10 @@ class Carbonara:
                 return response.content
             else:
                 self.write_log(f"An error occurred while generating the image: {response.text}")
-                return None
+                return jsonify({"output": "An error occurred while generating the image."})
         except Exception as e:
             self.write_log(f"An error occurred while generating the image: {e}")
+        return jsonify({"output": "An error occurred while generating the image."})
 
     """
         Generate an image of the given code using the carbonara API and save it to a MongoDB database using GridFS.
@@ -89,9 +91,9 @@ class Carbonara:
         :param code: The source code to be displayed in the image.
         :param kwargs: Additional parameters to be included in the request.
     """
-    def save_image(self, code: str, **kwargs):
+    def save_snippet(self, code: str, **kwargs):
         try:
-            self.write_log(f"save_image method with code: {code} and kwargs: {kwargs}")
+            self.write_log(f"save_image method with code and kwargs: {kwargs}")
             # Generate a random filename for the image
             filename = f"snippet_{random.randint(1, 10000)}.png"
             
@@ -113,8 +115,7 @@ class Carbonara:
                 # Return the download link for the image.
                 download_link = f"{self.plugin_url}/download/{filename}"
                 return download_link
-            else:
-                return {"output": "An error occurred while saving the code snippet to the database."}
+            
         except Exception as e:
             self.write_log(f"An error occurred while saving the code snippet to the database: {e}")
-            return {"output": "An error occurred while saving the code snippet to the database."}
+        return {"output": "An error occurred while saving the code snippet to the database."}
