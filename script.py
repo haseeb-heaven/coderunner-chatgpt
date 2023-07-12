@@ -23,8 +23,8 @@ from lib.python_runner import *
 from lib.jdoodle_api import *
 from quart_cors import cors
 import io
-
 from lib.quick_chart import QuickChartIO
+from lib.Carbonara import Carbonara
 
 # Webhook user agent by PluginLab.
 webhook_user_agent = "PluginLab-Webhook-Delivery"
@@ -46,11 +46,13 @@ global database
 database = None
 global quick_chart
 quick_chart = None
+carbonara = None
 
 try:
     # setting the database
     database = MongoDB()
     quick_chart = QuickChartIO(database)
+    carbonara = Carbonara(database)
 except Exception as e:
     print("Exception while connecting to the database : " + str(e))
 
@@ -396,11 +398,23 @@ async def upload():
 @app.route('/download/<filename>')
 async def download(filename):
     try:
+        write_log(f"download: filename is {filename}")
         global database
         # check the file extension
         if filename.endswith(('.png', '.jpg', '.jpeg', '.gif')):
 
             write_log(f"download: image filename is {filename}")
+            
+            # check if file is code snippet.
+            if filename.startswith('snippet_'):
+                write_log(f"download: image file is code snippet")
+                file = database.snippets.find_one({"filename": filename})
+                
+                if file:
+                    response = Response(file, content_type="image/png")
+                    response.headers["Content-Disposition"] = f"attachment; filename={filename}"
+                    return response
+            
             # get the file-like object from gridfs by its filename
             file = database.graphs.find_one({"filename": filename})
 
@@ -429,8 +443,7 @@ async def download(filename):
                 response.headers["Content-Disposition"] = f"attachment; filename={filename}"
                 return response
             else:
-                write_log(
-                    f"download: failed to get file by filename {filename}")
+                write_log(f"download: failed to get file by filename {filename}")
                 # handle the case when the file is not found
                 return jsonify({"error": "File not found"})
 
@@ -462,6 +475,46 @@ async def download(filename):
     except Exception as e:
         write_log(f"download: {e}")
         return jsonify({"error": str(e)})
+
+# Route for generating code snippets.
+@app.route('/save_snippet', methods=['POST'])
+async def save_snippet():
+    response = {}
+    try:
+        global carbonara
+        # Parse the JSON request body
+        data = await request.get_json()
+        
+        write_log(f"save_snippet: data is {data}")
+        
+        # Extract the parameters from the request body
+        code = data.get("code")
+        theme = data.get("theme")
+        language = data.get("language")
+        
+        if not language or not theme:
+            language = "python"
+            theme = "Night Owl"
+        
+        write_log("save_snippet: parameters extracted")
+        
+        if carbonara:
+            # Generate and save the image
+            download_link = carbonara.save_image(code, theme=theme, language=language)
+        else:
+            return jsonify({"error": "Carbonara is not defined"})
+        
+        # return the download link
+        if download_link:
+            #download_link = generate_tinyurl(download_link)
+            response = {"link": download_link}
+            response['support'] = support_message
+            response['extra_response_instructions'] = extra_response_instructions
+            
+    except Exception as e:
+        write_log(f"save_snippet: {e}")
+        return jsonify({"error": str(e)})
+    return response
 
 # Route for user_create event.
 @app.route("/user_create", methods=["POST"])
@@ -808,7 +861,7 @@ def setup_database():
 if __name__ == "__main__":
     try:
         write_log("CodeRunner starting")
-        app.run()
+        app.run(debug=True,port=8000,reload=True)
         write_log("CodeRunner started")
     except Exception as e:
         write_log(str(e))

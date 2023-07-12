@@ -33,6 +33,10 @@ To unlock these features, checkout the below links:</br>
 [Pricing Plans](https://code-runner-plugin.b12sites.com/pricing)</br>
 [Support](https://www.paypal.com/paypalme/EpicProTeam)</br>
 
+### Features:
+- **Save Snippets:** Save your code snippets for future reference and easy access in image format with color syntax highlighting powered by [Carbon](https://carbon.now.sh).</br>
+![carbon_cpp_output](https://github.com/haseeb-heaven/CodeRunner-Plugin/blob/server/resources/carbon_cpp_output.png?raw=true "")</br>
+
 For questions:
 
 - Discord: [Discord](https://discord.gg/BCRUpv4d6H)

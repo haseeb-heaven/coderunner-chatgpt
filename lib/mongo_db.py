@@ -35,6 +35,7 @@ class MongoDB:
         self.docs = GridFS(self.db, "docs")
         self.img = GridFS(self.db, "img")
         self.users = GridFS(self.db, "users")
+        self.snippets = GridFS(self.db, "snippets")
         
     def _connect(self):
         #Connecting to the database using the URI

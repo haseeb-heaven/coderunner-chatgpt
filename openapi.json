@@ -2,7 +2,7 @@
     "openapi": "3.0.0",
     "info": {
         "title": "Code Runner",
-        "version": "1.0"
+        "version": "1.2"
     },
     "servers": [
         {
@@ -221,6 +221,40 @@
                     }
                 }
             }
+        },
+        "/save_snippet": {
+            "post": {
+                "summary": "Save code snippet",
+                "operationId": "saveSnippet",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Snippet"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Snippet saved",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -266,8 +300,25 @@
                         "description": "The data to be uploaded."
                     }
                 }
+            },
+            "Snippet": {
+                "type": "object",
+                "required": ["code", "theme", "language"],
+                "properties": {
+                    "code": {
+                        "type": "string",
+                        "description": "The code snippet."
+                    },
+                    "theme": {
+                        "type": "string",
+                        "description": "The color theme of the code snippet."
+                    },
+                    "language": {
+                        "type": "string",
+                        "description": "The programming language of the code snippet."
+                    }
+                }
             }
         }
     }
 }
-
