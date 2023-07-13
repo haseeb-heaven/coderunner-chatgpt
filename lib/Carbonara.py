@@ -21,6 +21,20 @@ class Carbonara:
         self.api_url = "https://carbonara.solopov.dev/api/cook"
         self.headers = {'Content-Type': 'application/json'}
         self.bucket_name = "snippets"
+        
+        # defining the themes list
+        self.themes = {
+        "3024 Night", "A11y Dark", "Blackboard",
+        "Base 16 (Dark)", "Cobalt", "Duotone",
+        "Hopscotch", "Lucario", "Material",
+        "Monokai", "Night Owl", "Nord",
+        "Oceanic Next", "One Light", "Panda Syntax",
+        "Paraiso Dark", "Seti", "Shades of Purple",
+        "Solarized Dark", "Solarized Light", "SynthWave '84",
+        "Twilight", "Verminal", "VSCode",
+        "Yeti", "Zenburn"
+         }
+
         self.params = {
             "backgroundColor": "rgba(171, 184, 195, 1)",
             "dropShadow": True,

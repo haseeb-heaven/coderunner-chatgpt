@@ -16,7 +16,9 @@ class Kodso:
         self.plugin_url = "https://code-runner-plugin.vercel.app"
         self.api_url = "https://kod.so/gen"
         self.headers = {'Content-Type': 'application/json'}
-        self.themes_list = [
+        
+        # defining the themes list
+        self.themes = {
         "alternight","css-variables","dark-plus",
         "dracula-soft","dracula","github-dark-dimmed",
         "github-dark","github-light","light-plus",
@@ -24,7 +26,7 @@ class Kodso:
         "material-ocean","material-palenight","min-dark",
         "min-light","minimus","monokai","nord","one-dark-pro","poimandres","slack-dark",
         "slack-ochin","solarized-dark","solarized-light","vitesse-dark","vitesse-light"
-        ]
+        }
 
         self.params = {
             "code": "",
