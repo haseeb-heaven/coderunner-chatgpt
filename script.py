@@ -43,6 +43,13 @@ buymecoffee_url = "https://www.buymeacoffee.com/haseebheaven"
 paypal_url = "https://www.paypal.com/paypalme/EpicProTeam"
 plugin_name = "CodeRunner-Plugin"
 
+# ChatGPT - Share Chats.
+code_runner_basic_prompt = "https://chat.openai.com/share/0c2a154f-5df7-4976-8f8f-f31a4a539e56"
+code_runner_graph_prompt = "https://chat.openai.com/share/3c24fa1a-6c58-4464-b8ac-700e292bff04"
+code_runner_interpreter_prompt = "https://chat.openai.com/share/7e74a92d-8640-438b-b10d-8d181bdbab11"
+code_runner_snippet_prompt = "https://chat.openai.com/share/1b61bc05-067b-4779-b208-a297534cba2b"
+
+
 # setting the database.
 global database
 database = None
@@ -817,11 +824,13 @@ async def help():
         basic_prompts = f"{plugin_url}/download/code_runner_basic_prompts.txt"
         graph_prompts = f"{plugin_url}/download/code_runner_graph_prompts.txt"
         code_interpreter_prompts = f"{plugin_url}/download/code_runner_interpreter_prompts.txt"
+        snippet_prompts = f"{plugin_url}/download/code_runner_snippet_prompts.txt"
         
         message = f"**Code Runner Plugin Guide**\n\n" + \
-        f"**Basic Prompts**\n\n" + basic_prompts + "\n\n" + \
-        f"**Graph Prompts**\n\n" + graph_prompts + "\n\n" + \
-        f"**Code Interpreter Prompts**\n\n" + code_interpreter_prompts + "\n\n" + \
+        f"**Basic Prompts**\n\n" + basic_prompts + "\n\n" + "\nChatGPT Basic Prompts Share: " + code_runner_basic_prompt + \
+        f"**Graph Prompts**\n\n" + graph_prompts + "\n\n" + "\nChatGPT Graph Prompts Share: " + code_runner_graph_prompt + \
+        f"**Code Interpreter Prompts**\n\n" + code_interpreter_prompts + "\n\n" + " ChatGPT Interpreter Prompts Share: " + code_runner_interpreter_prompt + \
+        f"**Code Snippets Prompts**\n\n" + snippet_prompts + "\n\n" + " ChatGPT Snippets Prompts Share: " + code_runner_snippet_prompt + \
         f"**Youtube Video**\n\n" + "https://www.youtube.com/watch?v=Ahko7E2S1R8" + "\n\n" + \
         f"**Support**\n\n" + "\n".join(support_message.split("\n")) + "\n\n"
         

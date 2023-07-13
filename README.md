@@ -34,8 +34,9 @@ To unlock these features, checkout the below links:</br>
 [Support](https://www.paypal.com/paypalme/EpicProTeam)</br>
 
 ### Features:
-- **Save Snippets:** Save your code snippets for future reference and easy access in image format with color syntax highlighting powered by [Carbon](https://carbon.now.sh).</br>
+- **Save Snippets:** Save your code snippets for future reference and easy access in image format with color syntax highlighting powered by [Kod.so](https://kod.so).</br>
 ![carbon_cpp_output](https://github.com/haseeb-heaven/CodeRunner-Plugin/blob/server/resources/carbon_cpp_output.png?raw=true "")</br>
+[Code Snippets Share Code - ChatGPT](https://chat.openai.com/share/1b61bc05-067b-4779-b208-a297534cba2b)</br>
 
 For questions:
 
