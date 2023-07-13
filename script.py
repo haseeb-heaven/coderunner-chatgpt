@@ -9,7 +9,8 @@ Author : HeavenHM
 
 # importing the required libraries.
 from datetime import datetime, timezone
-from quart import Quart, request, jsonify, redirect, Response, url_for, send_file
+from urllib.parse import quote
+from quart import Quart, make_response, request, jsonify, redirect, Response, url_for, send_file
 import traceback
 import random
 import json
@@ -114,13 +115,16 @@ def write_log(log_msg: str):
         print(str(e))
 
 # Method to generate TinyURL links.
-def generate_tinyurl(url: str):
-    response = ""
+def generate_tinyurl(url: str,encode_url: bool = False):
+    tiny_url = ""
     try:
-        response = requests.get("http://tinyurl.com/api-create.php?url=" + url).text
+        if encode_url:
+             url = quote(url, safe='')
+             write_log("Encoded URL length : " + str(len(url)))
+        tiny_url = requests.get("http://tinyurl.com/api-create.php?url=" + url).text
     except Exception as e:
         write_log("Exception while generating tinyurl : " + str(e))
-    return response
+    return tiny_url
 
 # Define a method to save the plot in mongodb
 def save_graph(filename):
@@ -499,22 +503,26 @@ async def save_snippet():
         
         if not language or not theme:
             language = "python"
-            theme = "Nord"
+            theme = "nord"
         
         write_log("save_snippet: parameters extracted")
         
         if kodso:
             # Generate and save the image
-            download_link = kodso.save_snippet(code, theme=theme, language=language)
+            snippet_link, download_png_url, download_jpg_url, download_svg_url = kodso.save_snippet(code, theme=theme, lang=language)
         else:
-            return jsonify({"error": "Carbonara is not defined"})
+            return jsonify({"error": "Kodso is not defined"})
                 
         # return the download link
-        if download_link:
-            #download_link = generate_tinyurl(download_link)
-            response = {"link": download_link}
+        if snippet_link:
+            # Return Encoded link because of URL strcutre from Kodso
+            snippet_link = generate_tinyurl(snippet_link,True)
+            response = {"snippet_link": snippet_link}
+            response['download_png_url'] = generate_tinyurl(download_png_url,True)
+            response['download_jpg_url'] = generate_tinyurl(download_jpg_url,True)
+            response['download_svg_url'] = generate_tinyurl(download_svg_url,True)
             response['support'] = support_message
-            response['extra_response_instructions'] = extra_response_instructions
+            response['extra_response_instructions'] = extra_response_instructions + "\nFor Output image use markdown to display it then dont use codeblock now use image tag to display it.\n\n" + "Example:\n" + "![Image](" + snippet_link + ")\nAnd display all download links for all formats."
         
         elapsed_time = time.time() - start_time # calculate the elapsed time
         write_log(f"save_snippet: elapsed time is {elapsed_time} seconds")

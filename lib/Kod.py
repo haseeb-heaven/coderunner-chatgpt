@@ -19,7 +19,7 @@ class Kodso:
         self.params = {
             "code": "",
             "num": 1,
-            "title": "",
+            "title": "Code Snippet",
             "theme": "nord",
             "codeFontName": "fira-code",
             "tabSize": 4
@@ -75,7 +75,10 @@ class Kodso:
                 self.write_log(f"save_snippet: method failed to generate code_url")
                 return {"output": "An error occurred while generating the code URL."}
             
-            return code_url
+            download_png_url = code_url + "&output=png&download=1"
+            download_jpg_url = code_url + "&output=jpg&download=1"
+            download_svg_url = code_url + "&output=svg&download=1"
+            return code_url, download_png_url, download_jpg_url, download_svg_url
         
             # Then download the image located in the generated URL and save it
             image_resp = requests.get(code_url)
