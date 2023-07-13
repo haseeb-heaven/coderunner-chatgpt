@@ -492,8 +492,8 @@ async def download(filename):
 # Route for generating code snippets.
 import time
 
-@app.route('/save_snippet', methods=['POST'])
-async def save_snippet():
+@app.route('/show_snippet', methods=['POST'])
+async def show_snippet():
     response = {}
     try:
         global kodso
@@ -501,7 +501,7 @@ async def save_snippet():
         # Parse the JSON request body
         data = await request.get_json()
         
-        write_log(f"save_snippet: data is {data}")
+        write_log(f"show_snippet: data is {data}")
         
         # Extract the parameters from the request body
         code = data.get("code")
@@ -513,7 +513,7 @@ async def save_snippet():
         showNums = data.get("showNums")
         
         nums = 0
-        write_log("save_snippet: parameters extracted")
+        write_log("show_snippet: parameters extracted")
         
         # check if theme selected is supported.
         if theme not in kodso.themes:
@@ -525,7 +525,7 @@ async def save_snippet():
         
         if kodso:
             # Generate and save the image
-            snippet_link, download_png_url, download_jpg_url, download_svg_url = kodso.save_snippet(code,title=title, theme=theme, lang=language,nums=nums,opacity=opacity,blur=blurLines)
+            snippet_link, download_png_url, download_jpg_url, download_svg_url = kodso.show_snippet(code,title=title, theme=theme, lang=language,nums=nums,opacity=opacity,blur=blurLines)
         else:
             return jsonify({"error": "Kodso is not defined"})
                 

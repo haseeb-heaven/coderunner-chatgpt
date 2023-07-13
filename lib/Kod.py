@@ -81,7 +81,7 @@ class Kodso:
             self.write_log(f"generate_snippet: An error occurred while generating the code: {e}")
             return {"output": "An error occurred while generating the code."}
     
-    def save_snippet(self, code: str, **kwargs):
+    def show_snippet(self, code: str, **kwargs):
         try:
             self.write_log(f"save_snippet: method with code and kwargs: {kwargs}")
             # Generate a random filename for the image
