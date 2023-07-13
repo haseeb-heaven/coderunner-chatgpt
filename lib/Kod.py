@@ -16,6 +16,16 @@ class Kodso:
         self.plugin_url = "https://code-runner-plugin.vercel.app"
         self.api_url = "https://kod.so/gen"
         self.headers = {'Content-Type': 'application/json'}
+        self.themes_list = [
+        "alternight","css-variables","dark-plus",
+        "dracula-soft","dracula","github-dark-dimmed",
+        "github-dark","github-light","light-plus",
+        "material-darker","material-default","material-lighter",
+        "material-ocean","material-palenight","min-dark",
+        "min-light","minimus","monokai","nord","one-dark-pro","poimandres","slack-dark",
+        "slack-ochin","solarized-dark","solarized-light","vitesse-dark","vitesse-light"
+        ]
+
         self.params = {
             "code": "",
             "num": 1,
@@ -99,3 +109,11 @@ class Kodso:
         except Exception as e:
             self.write_log(f"An error occurred while saving the code snippet to the database: {e}")
         return {"output": "An error occurred while saving the code snippet to the database."}
+    
+    def get_snippet_theme(self):
+        try:
+            # return a random theme from the list
+            return random.choice(self.themes_list)
+        except Exception as e:
+            self.write_log(f"An error occurred while getting the theme: {e}")
+            return "nord"
