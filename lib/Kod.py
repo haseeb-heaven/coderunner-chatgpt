@@ -34,7 +34,14 @@ class Kodso:
             "title": "Code Snippet",
             "theme": "nord",
             "codeFontName": "fira-code",
-            "tabSize": 4
+            "tabSize": 4,
+            "watermark": "Code Runner Plugin",
+            "menuColor": 0,
+            "paddingtb": 15,
+            "paddinglr": 15,
+            "header": 0,
+            "background": "miaka",
+            "opacity": 0.7
         }
         self.bucket_name = "snippets"
         self.database = database

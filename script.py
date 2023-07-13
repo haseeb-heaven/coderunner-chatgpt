@@ -501,16 +501,24 @@ async def save_snippet():
         title = data.get("title")
         theme = data.get("theme")
         language = data.get("language")
+        opacity = data.get("opacity")
+        blurLines = data.get("blurLines")
+        showNums = data.get("showNums")
         
+        nums = 0
         write_log("save_snippet: parameters extracted")
         
         # check if theme selected is supported.
         if theme not in kodso.themes:
             theme = kodso.get_snippet_theme()
+            
+        # set line numers if selected.
+        if showNums:
+            nums = 1
         
         if kodso:
             # Generate and save the image
-            snippet_link, download_png_url, download_jpg_url, download_svg_url = kodso.save_snippet(code,title=title, theme=theme, lang=language)
+            snippet_link, download_png_url, download_jpg_url, download_svg_url = kodso.save_snippet(code,title=title, theme=theme, lang=language,nums=nums,opacity=opacity,blur=blurLines)
         else:
             return jsonify({"error": "Kodso is not defined"})
                 
