@@ -120,7 +120,7 @@ For demo purpose i also created this in Quart framework. The files are located i
 - Quart Main: `server/main_quart.py`
 
 ## Showcase - Demo of Plugin.</br>
-[![code_plugin_demo](https://img.youtube.com/vi/Ahko7E2S1R8/0.jpg)](https://youtube.com/Ahko7E2S1R8)</br>
+[![code_plugin_demo](https://img.youtube.com/vi/Ahko7E2S1R8/0.jpg)](https://www.youtube.com/watch?v=Ahko7E2S1R8)</br>
 
 ## Join Community.
 Join the community of Code-Runner on Discord [here](https://discord.gg/BCRUpv4d6H).
