@@ -1,3 +1,11 @@
+"""
+Description: This use API for QuickChart so which is a chart generator for developers.
+This uses URL parameters to generate charts from the website.
+Support all kinds of charts (Bar, Pie, Line, Doughnut, Radar, Polar Area, Bubble, Scatter, Area, Mixed).
+Server API : REST.
+Website : "https://quickchart.io"
+"""
+
 import requests
 import json
 import random

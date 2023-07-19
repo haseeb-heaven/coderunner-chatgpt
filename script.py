@@ -1,32 +1,32 @@
 """
 Description: This is ChatGPT Plugin for CodeRunner. Which can run and save code in 70+ languages.
-This is a Quart Web Server which is used to run the code and return the output.
+And can genrate graphs and plots for data science and machine learning.
+This has also support for managing files and documents.
 Server API : Quart.
 Language: Python.
-Date: 06/07/2023.
+Date: 19/07/2023.
 Author : HeavenHM
 """
 
 # importing the required libraries.
 from datetime import datetime, timezone
 from urllib.parse import quote
-from quart import Quart, make_response, request, jsonify, redirect, Response, url_for, send_file
+from quart import Quart,request, jsonify, redirect, Response, url_for
 import traceback
 import random
 import json
 import quart
 import requests
 import os
+import io
 import gridfs
 from pathlib import Path
 from lib.mongo_db import MongoDB
 from lib.python_runner import *
 from lib.jdoodle_api import *
 from quart_cors import cors
-import io
 from lib.quick_chart import QuickChartIO
-from lib.Carbonara import Carbonara
-from lib.Kod import Kodso
+from lib.kod import Kodso
 
 # Webhook user agent by PluginLab.
 webhook_user_agent = "PluginLab-Webhook-Delivery"
@@ -56,12 +56,12 @@ database = None
 global quick_chart
 quick_chart = None
 carbonara = None
+kodso = None
 
 try:
     # setting the database
     database = MongoDB()
     quick_chart = QuickChartIO(database)
-    carbonara = Carbonara(database)
     kodso = Kodso(database)
 except Exception as e:
     print("Exception while connecting to the database : " + str(e))

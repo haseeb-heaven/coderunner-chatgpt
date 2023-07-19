@@ -1,14 +1,13 @@
 """
 Description: This use API for Kod so which is a code snippet generator for developers.
+Because its easy to generate code snippet with this API, I decided to use it.
 Server API : REST.
 Website : https://kod.so/
 """
 
-
 import requests
 from datetime import datetime
 import random
-import gridfs
 
 class Kodso:
     def __init__(self, database):
@@ -98,22 +97,6 @@ class Kodso:
             download_jpg_url = code_url + "&output=jpg&download=1"
             download_svg_url = code_url + "&output=svg&download=1"
             return code_url, download_png_url, download_jpg_url, download_svg_url
-        
-            # Then download the image located in the generated URL and save it
-            image_resp = requests.get(code_url)
-            image_data = image_resp.content
-            
-            # Get the GridFSBucket object from the database object with the bucket name 'Snippets'
-            bucket = gridfs.GridFSBucket(self.database.db, bucket_name=self.bucket_name)
-            
-            # Store the image file in mongodb using the bucket object
-            file_id = bucket.upload_from_stream(filename, image_data)
-            
-            if file_id:
-                self.write_log("save_snippet: Image saved to database successfully.")
-                # Return the download link for the image.
-                download_link = f"{self.plugin_url}/download/{filename}"
-                return download_link
             
         except Exception as e:
             self.write_log(f"An error occurred while saving the code snippet to the database: {e}")
